@@ -11,14 +11,6 @@ import {
 import axios, { AxiosError } from "axios";
 import { enteredCredentials_signup_inter } from "./types";
 
-// interface enteredCredentials_inter {
-//   name: string;
-//   email: string;
-//   dob: string;
-//   password: string;
-//   confirmPassword: string;
-// }
-
 const SignUp = () => {
   const [enteredCredentials, setEnteredCredentials] =
     useState<enteredCredentials_signup_inter>({
@@ -75,7 +67,7 @@ const SignUp = () => {
       // if response is success then redirect to login page
       console.log("Response is ", response.data.message);
       toast.success(response.data.message);
-      navigate("/");
+      navigate("/login");
     } catch (error) {
       if (axios.isAxiosError(error)) {
         // console.log(error && error.response.);

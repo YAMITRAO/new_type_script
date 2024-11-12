@@ -51,9 +51,11 @@ const Login = () => {
         // console.log(error && error.response.);
         let api_error: AxiosError<ApiErrorResponse> = error;
         toast.error(api_error.response?.data.message);
-        setEnteredCredentials({
-          email: "",
-          password: "",
+        setEnteredCredentials((prev) => {
+          return {
+            ...prev,
+            password: "",
+          };
         });
       }
     }

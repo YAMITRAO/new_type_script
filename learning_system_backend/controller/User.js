@@ -1,4 +1,5 @@
 const UserModel = require("../models/User");
+const bcrypt = require("bcrypt");
 
 const userSignUpController = async (req, res) => {
   console.log("User signUp request...", req.body);
@@ -22,11 +23,13 @@ const userSignUpController = async (req, res) => {
       throw new Error("Email already exists. Try Using other mail id.");
     }
 
+    let hasedPassword = await bcrypt.hash(password, 10);
+
     const newUser = await new UserModel({
       name,
       email,
       dob,
-      password,
+      password: hasedPassword,
     });
     await newUser.save();
     return res.status(200).json({
@@ -49,12 +52,16 @@ const userLoginController = async (req, res) => {
   try {
     // find existing user
     const user = await UserModel.findOne({ email });
-
     console.log("isUserFound ", user);
-
     if (!user) {
       throw new Error("Email doesn't exist");
-    } else if (user.password === password) {
+    } else {
+      // check hashed password
+      const isPasswordMatched = await bcrypt.compare(password, user.password);
+      console.log("Password after hashing is :-", isPasswordMatched);
+      if (!isPasswordMatched) {
+        throw new Error("Enter Correct Passowrd");
+      }
       // if password is correct, return user data
       res.status(200).json({
         message: "Loging Success!",
