@@ -5,12 +5,13 @@ import SignUp from "./pages/auth/SignUp";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Login from "./pages/auth/Login";
-import UserContextData from "./context/user_context/UserContext";
 import Home from "./pages/home/Home";
+import { useContext } from "react";
+import UserContext from "./context/user_context/UserContext";
 
 function App() {
-  const { state, dispatch } = UserContextData();
-  console.log("context values are :-", state, dispatch);
+  const { state } = useContext(UserContext);
+  console.log("context values are :-", state);
 
   let router = createBrowserRouter([
     {
@@ -19,7 +20,7 @@ function App() {
       children: [
         {
           path: "/",
-          element: <Home />,
+          element: state.isAuth ? <Home /> : <Login />,
         },
         {
           path: "/signup",

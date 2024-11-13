@@ -1,6 +1,8 @@
 const UserModel = require("../models/User");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
+// signup controller
 const userSignUpController = async (req, res) => {
   console.log("User signUp request...", req.body);
 
@@ -44,10 +46,25 @@ const userSignUpController = async (req, res) => {
   }
 };
 
+// get user based on auth token
+const userGetController = async (req, res) => {
+  const user = await UserModel.findOne({ email: req.userMail });
+  res.status(200).json({
+    message: "User Login through token",
+    data: {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isProjectRegistered: user.isProjectRegistered,
+    },
+  });
+};
+
 const userLoginController = async (req, res) => {
   const { email, password } = req?.body;
 
-  console.log("Login request", email, password);
+  console.log("Login request", req?.body);
+  console.log("Request header", req.headers["authorization"]?.split(" ")[1]);
 
   try {
     // find existing user
@@ -62,12 +79,24 @@ const userLoginController = async (req, res) => {
       if (!isPasswordMatched) {
         throw new Error("Enter Correct Passowrd");
       }
+
+      // generate a token
+      let payload = {
+        email: email,
+      };
+      const SECRET_KEY = "fjklsdhkghkjhdfgfgjkdhgdk";
+      const token = await jwt.sign(payload, SECRET_KEY, { expiresIn: 60 * 1 });
+      console.log("generated token is :- ", token);
+
       // if password is correct, return user data
       res.status(200).json({
         message: "Loging Success!",
         data: {
-          email: email,
-          token: "7985734ehdsfsdhweiuy345798",
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          isProjectRegistered: user.isProjectRegistered,
+          token: token,
         },
       });
     }
@@ -78,7 +107,16 @@ const userLoginController = async (req, res) => {
   }
 };
 
+const userAddProjectController = async (req, res) => {
+  console.log("Data at body is:- ", req?.body);
+  console.log("Data at auth is ", req.userEmail);
+  try {
+  } catch (error) {}
+};
+
 module.exports = {
   userSignUpController,
   userLoginController,
+  userAddProjectController,
+  userGetController,
 };

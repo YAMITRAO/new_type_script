@@ -86,7 +86,7 @@ const SignUp = () => {
 
   // console.log("Entered credentials ", enteredCredentials);
   return (
-    <div className=" mx-auto bg-[#1f1f1f]   w-screen h-screen flex   items-center flex-col   md:flex-row md:justify-center text-white overflow-scroll">
+    <div className="  w-full h-full flex items-center flex-col   md:flex-row md:justify-center text-white ">
       {/* left side container */}
       <div className=" h-full w-full flex  justify-center items-center mt-2">
         <img
@@ -96,7 +96,7 @@ const SignUp = () => {
       </div>
 
       {/* right side container */}
-      <div className=" h-full w-full flex justify-center items-center p-4 px-6">
+      <div className=" h-full w-full flex justify-center items-center py-4 px-6 mt-2">
         {/* form container */}
         <div className=" w-full ">
           <form className=" w-full px-1 md:px-10 " onSubmit={submithandler}>

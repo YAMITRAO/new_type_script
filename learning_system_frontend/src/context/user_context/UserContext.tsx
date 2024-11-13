@@ -7,7 +7,10 @@ interface UserContextProvider_Prob {
 }
 
 // User Context
-const UserContext = createContext<UserContextValue | undefined>(undefined);
+const UserContext = createContext<UserContextValue>({
+  state: intialValue,
+  dispatch: () => {},
+});
 
 // User Context provider function
 export const UserContextProvider: React.FC<UserContextProvider_Prob> = ({
@@ -22,12 +25,14 @@ export const UserContextProvider: React.FC<UserContextProvider_Prob> = ({
   );
 };
 
-const UserContextData = () => {
-  const ctx = useContext(UserContext);
-  if (!ctx) {
-    throw new Error("useUser must be used within a UserProvider");
-  }
-  return ctx;
-};
+// const ctx = useContext(UserContext);
 
-export default UserContextData;
+// const UserContextData = () => {
+//   console.log("User context data called...");
+//   if (!ctx) {
+//     throw new Error("useUser must be used within a UserProvider");
+//   }
+//   return ctx;
+// };
+
+export default UserContext;
