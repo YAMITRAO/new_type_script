@@ -12,6 +12,7 @@ export interface LoginUserDetails {
   token: string;
   _id: string;
   isProjectRegistered: boolean;
+  role: string;
 }
 
 export interface ProjectRegDetails extends LoginUserDetails {
@@ -20,6 +21,13 @@ export interface ProjectRegDetails extends LoginUserDetails {
   teamMembers: string;
   projectDescription: string;
 }
+
+// export interface SingleProjectDetails {
+//   projectTitle: string;
+//   teamName: string;
+//   teamMembers: string;
+//   projectDescription: string;
+// }
 
 export interface ApiResponse<T> {
   message: number;

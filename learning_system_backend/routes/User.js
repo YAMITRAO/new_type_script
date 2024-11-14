@@ -4,6 +4,7 @@ const {
   userLoginController,
   userAddProjectController,
   userGetController,
+  userGetSingleProjectController,
 } = require("../controller/User");
 const Auth = require("../middleware/Auth");
 
@@ -16,5 +17,8 @@ userRouter.get("/me", Auth, userGetController);
 
 // add_project
 userRouter.post("/add-project", Auth, userAddProjectController);
+
+// get single project
+userRouter.get("/get-first-project", Auth, userGetSingleProjectController);
 
 module.exports = userRouter;

@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import InputCustom from "../../components/InputCustom";
 import axiosInst from "../../api/AxiosInst";
-import { AxiosResponse } from "axios";
+// import { AxiosResponse } from "axios";
 import { ApiResponse, ProjectRegDetails } from "../../api/ApiResponses";
+import axios from "axios";
+import { toast } from "react-toastify";
+import UserContext from "../../context/user_context/UserContext";
 
 interface ProjectregFormProb_int {
   onClick: () => void;
@@ -16,6 +19,8 @@ const ProjectRegForm: React.FC<ProjectregFormProb_int> = ({ onClick }) => {
     projectDescription: "",
   });
 
+  // context data
+  const { dispatch } = useContext(UserContext);
   // Input handler
   const enteredInputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -29,16 +34,30 @@ const ProjectRegForm: React.FC<ProjectregFormProb_int> = ({ onClick }) => {
     event.preventDefault();
 
     try {
+      let token: string | null = localStorage.getItem("token");
       const response = await axiosInst.post<ApiResponse<ProjectRegDetails>>(
         "/user/add-project",
         {
           ...enteredCredentials,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
-
+      onClick();
+      toast.success("Congrts! Successfully Registered..");
+      // set isProjectreg to true
+      dispatch({ type: "UPDATE_USER", payload: { isProjectRegistered: true } });
       console.log("Project submition details is :-, ", response.data);
     } catch (error) {
       console.error(error);
+      if (axios.isAxiosError(error)) {
+        toast.error(error?.response?.data.message);
+      }
+      onClick();
     }
     setEnteredCredentials({
       projectTitle: "",

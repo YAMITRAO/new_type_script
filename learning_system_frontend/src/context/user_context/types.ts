@@ -4,6 +4,7 @@ export interface User {
   email: string;
   isAuth: boolean;
   isProjectRegistered: boolean;
+  role: string;
 }
 
 export type UserAction =
@@ -23,6 +24,7 @@ export const intialValue: User = {
   email: "",
   isAuth: false,
   isProjectRegistered: false,
+  role: "student",
 };
 
 // UPDATE FUNCTION

@@ -51,13 +51,14 @@ const Login = () => {
 
       console.log("User sign up api response is :- ", response);
       localStorage.setItem("token", response.data.data.token);
-
+      window;
       const payload: User = {
         id: response.data.data._id,
         name: response.data.data.name,
         email: response.data.data.email,
         isAuth: true,
         isProjectRegistered: response.data.data.isProjectRegistered,
+        role: response.data.data.role,
       };
 
       // set data to context
@@ -100,6 +101,7 @@ const Login = () => {
         email: response.data.data.email,
         isAuth: true,
         isProjectRegistered: response.data.data.isProjectRegistered,
+        role: response.data.data.role,
       };
 
       // set data to context

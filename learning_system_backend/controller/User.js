@@ -1,6 +1,7 @@
 const UserModel = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const ProjectModel = require("../models/Projects");
 
 // signup controller
 const userSignUpController = async (req, res) => {
@@ -56,6 +57,7 @@ const userGetController = async (req, res) => {
       name: user.name,
       email: user.email,
       isProjectRegistered: user.isProjectRegistered,
+      role: user.role,
     },
   });
 };
@@ -85,7 +87,7 @@ const userLoginController = async (req, res) => {
         email: email,
       };
       const SECRET_KEY = "fjklsdhkghkjhdfgfgjkdhgdk";
-      const token = await jwt.sign(payload, SECRET_KEY, { expiresIn: 60 * 1 });
+      const token = await jwt.sign(payload, SECRET_KEY, { expiresIn: 60 * 60 });
       console.log("generated token is :- ", token);
 
       // if password is correct, return user data
@@ -97,6 +99,7 @@ const userLoginController = async (req, res) => {
           email: user.email,
           isProjectRegistered: user.isProjectRegistered,
           token: token,
+          role: user.role,
         },
       });
     }
@@ -109,9 +112,79 @@ const userLoginController = async (req, res) => {
 
 const userAddProjectController = async (req, res) => {
   console.log("Data at body is:- ", req?.body);
-  console.log("Data at auth is ", req.userEmail);
+  console.log("Data at auth is ", req.userMail);
   try {
-  } catch (error) {}
+    // check user exist
+    const user = await UserModel.findOne({ email: req.userMail });
+    console.log("User founded");
+    if (!user) {
+      throw new Error("User doesn't exist");
+    }
+
+    // check is user prev reg or not
+    if (user.isProjectRegistered) {
+      throw new Error("Already registered.");
+    }
+
+    console.log("Project is not registered ...hence ...");
+    // add project to user
+    const addProject = await new ProjectModel({
+      ...req?.body,
+      owner: user._id,
+    });
+
+    // update isProjectRegistered to true
+    user.isProjectRegistered = true;
+    await addProject.save();
+    await user.save();
+
+    res.status(200).json({
+      message: "Project Registered Successfully",
+      data: addProject,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: error && error.message,
+    });
+  }
+};
+
+const userGetSingleProjectController = async (req, res) => {
+  const userEmail = req?.userMail;
+  console.log("User email is:-", userEmail);
+  try {
+    // find user using email id:-
+    const user = await UserModel.findOne({ email: userEmail });
+    // console.log("User founded and that is", user);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const userId = user._id;
+    // console.log("User id is :- ", userId);
+
+    // find project related to user
+    // let project = await ProjectModel.find({ owner: userId });
+    console.log(
+      "Role of the user is :=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-",
+      user.role
+    );
+    let project =
+      user.role == "admin"
+        ? await ProjectModel.find({})
+        : await ProjectModel.find({ owner: userId });
+    if (!project.length) {
+      throw new Error("Project not found");
+    }
+
+    res.status(200).json({
+      message: "Project found",
+      data: project,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: error && error.message,
+    });
+  }
 };
 
 module.exports = {
@@ -119,4 +192,5 @@ module.exports = {
   userLoginController,
   userAddProjectController,
   userGetController,
+  userGetSingleProjectController,
 };

@@ -17,7 +17,7 @@ const NavBar = () => {
     <div className="w-screen h-14 ">
       {/* navbar container */}
 
-      <div className="w-full h-14 fixed top-0 border-b bg-slate-600">
+      <div className="w-full h-14 fixed z-50 top-0 border-b bg-slate-600">
         <nav className=" w-full h-full px-10 flex justify-between items-center text-white">
           {/* nav logo */}
           <div className="w-fit"></div>
