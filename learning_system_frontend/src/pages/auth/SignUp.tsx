@@ -86,9 +86,9 @@ const SignUp = () => {
 
   // console.log("Entered credentials ", enteredCredentials);
   return (
-    <div className="  w-full h-full flex items-center flex-col   md:flex-row md:justify-center text-white ">
+    <div className="  w-full box-border h-[calc(100vh-70px)] flex items-center flex-col   md:flex-row md:justify-center text-white ">
       {/* left side container */}
-      <div className=" h-full w-full flex  justify-center items-center mt-2">
+      <div className=" h-full w-full flex  justify-center items-center ">
         <img
           src="https://tecdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
           alt="signup text on clipboard"
@@ -96,7 +96,7 @@ const SignUp = () => {
       </div>
 
       {/* right side container */}
-      <div className=" h-full w-full flex justify-center items-center py-4 px-6 mt-2">
+      <div className=" h-full w-full flex justify-center items-center py-4 px-6 ">
         {/* form container */}
         <div className=" w-full ">
           <form className=" w-full px-1 md:px-10 " onSubmit={submithandler}>

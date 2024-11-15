@@ -20,7 +20,7 @@ const ProjectView: React.FC<projectViewProps_int> = ({
 }) => {
   console.log("Role is what::::-----", role);
   return (
-    <div className=" block min-w-[90vw] max-w-[90vw] h-auto relative">
+    <div className=" w-11/12 box-border h-auto relative">
       {/* edit button */}
       {role === "admin" && (
         <div className="absolute top-2 right-3 text-xl flex gap-2">

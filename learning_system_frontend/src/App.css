@@ -1,3 +1,29 @@
 body {
   @apply bg-[#1f1f1f];
 }
+
+/* In your custom CSS file (e.g., styles.css) */
+
+/* .scrollbar-custom {
+  scrollbar-width: thin; 
+  scrollbar-color: #465568 #f3f4f6;
+  scroll-behavior: smooth;
+} */
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 15px; /* Width for vertical scrollbar */
+  height: 15px; /* Height for horizontal scrollbar */
+}
+
+/* Style the track (background) of the scrollbar */
+.custom-scrollbar::-webkit-scrollbar-track {
+  background-color: #465568; /* Light grey background for track */
+  border-radius: 20px; /* Rounded corners for track */
+}
+
+/* Style the thumb (the draggable part of the scrollbar) */
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #465568; /* Blue thumb color */
+  border-radius: 10px; /* Rounded corners for thumb */
+  border: 2px solid #a0a5b0; /* Optional: Add space between thumb and track */
+}

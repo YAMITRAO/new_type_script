@@ -65,8 +65,9 @@ const userGetController = async (req, res) => {
 const userLoginController = async (req, res) => {
   const { email, password } = req?.body;
 
-  console.log("Login request", req?.body);
-  console.log("Request header", req.headers["authorization"]?.split(" ")[1]);
+  // console.log("Login request", req?.body);
+  // console.log("Request header", req.headers["authorization"]?.split(" ")[1]);
+  console.log("cookie from the back end is:-", req.cookies);
 
   try {
     // find existing user
@@ -91,6 +92,7 @@ const userLoginController = async (req, res) => {
       console.log("generated token is :- ", token);
 
       // if password is correct, return user data
+      console.log("Cookies sent to frontend");
       res.status(200).json({
         message: "Loging Success!",
         data: {

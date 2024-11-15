@@ -127,9 +127,9 @@ const Login = () => {
       {isLoading ? (
         <div className="text-3xl font-bold text-yellow-600">Loading...</div>
       ) : (
-        <div className="   w-screen h-full flex   items-center flex-col   md:flex-row md:justify-center text-white ">
+        <div className="   w-full box-border h-[calc(100vh-70px)] flex items-center flex-col md:flex-row md:justify-center text-white ">
           {/* left side container */}
-          <div className=" h-full w-full flex  justify-center items-center mt-2">
+          <div className=" h-full w-full flex  justify-center items-center ">
             <img
               src="https://tecdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
               alt="signup text on clipboard"

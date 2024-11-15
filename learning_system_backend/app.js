@@ -3,13 +3,22 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const cookieParser = require("cookie-parser");
 
 const PORT = process.env.PORT;
 
 const app = express();
 
-app.use(cors());
+const corsOptions = {
+  origin: "http://localhost:5173", // replace with your frontend URL
+  credentials: true, // Allow sending cookies
+};
+
+app.use(cors(corsOptions));
+app.use(cookieParser());
+
 app.use(express.static("public"));
+
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
