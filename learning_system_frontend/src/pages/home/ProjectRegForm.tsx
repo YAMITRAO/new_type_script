@@ -70,8 +70,8 @@ const ProjectRegForm: React.FC<ProjectregFormProb_int> = ({ onClick }) => {
   console.log(enteredCredentials);
 
   return (
-    <div className="w-[100%] h-[100%] fixed top-0 left-0 bottom-0 right-0 bg-[rgba(20,20,20,0.8)] flex justify-center items-center overflow-auto">
-      <div className="w-11/12 md:8/12 lg:w-5/12 h-11/12  p-2 relative border rounded bg-slate-800 overflow-auto">
+    <div className="w-[100%] h-[100vh] max-h-[100vh] fixed pt-6 pb-4 box-border top-16 left-0 bottom-0 right-0 bg-[rgba(20,20,20,0.8)] flex justify-center items-center overflow-scroll">
+      <div className="w-11/12 md:8/12 lg:w-5/12 h-11/12 overflow-scroll p-2 relative border rounded bg-slate-800 ">
         {/* close button */}
         <div
           className="text-2xl font-semibold text-white bg-red-700 px-2 rounded inline-block border hover:bg-white hover:text-red-700 hover:border-red-700 transition-all cursor-pointer absolute right-3 top-3"

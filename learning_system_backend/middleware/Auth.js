@@ -10,7 +10,7 @@ const Auth = async (req, res, next) => {
   try {
     // verify token and decode it
     const SECRET_KEY = "fjklsdhkghkjhdfgfgjkdhgdk";
-    const decode = jwt.verify(token, SECRET_KEY);
+    const decode = await jwt.verify(token, SECRET_KEY);
     console.log("Decoded value is :- ", decode);
     req.userMail = decode.email;
     next();
