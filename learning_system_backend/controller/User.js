@@ -189,10 +189,62 @@ const userGetSingleProjectController = async (req, res) => {
   }
 };
 
+const getAllUsersController = async (req, res) => {
+  // ========================testing purpose only
+  // const allUsers = await UserModel.find({ role: { $ne: "admin" } });
+  // res.status(200).json({
+  //   message: "All users found",
+  //   data: allUsers,
+  // });
+  // return;
+  // ========================testing purpose only
+
+  try {
+    const userEmail = req?.userMail;
+    console.log("User email id after auth is :-", userEmail);
+
+    // find user using email id:-
+    const user = await UserModel.findOne({ email: userEmail });
+
+    console.log("User founded and that is", user);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    if (user?.role == "admin") {
+      const allUsers = await UserModel.find({});
+      res.status(200).json({
+        message: "All users found",
+        data: allUsers,
+      });
+    } else {
+      throw new Error("You are not an admin");
+    }
+  } catch (error) {
+    res.status(400).json({
+      message: error && error.message,
+    });
+  }
+};
+
+// delete user
+const deleteUserController = async (req, res) => {
+  const userEmail = req?.userMail;
+  const deleteUserId = req.params.userId;
+
+  try {
+  } catch (error) {
+    res.status(400).json({
+      message: error && error.message,
+    });
+  }
+};
+
 module.exports = {
   userSignUpController,
   userLoginController,
   userAddProjectController,
   userGetController,
   userGetSingleProjectController,
+  getAllUsersController,
+  deleteUserController,
 };

@@ -8,6 +8,8 @@ import Login from "./pages/auth/Login";
 import Home from "./pages/home/Home";
 import { useContext } from "react";
 import UserContext from "./context/user_context/UserContext";
+import Users from "./pages/users/Users";
+// import ConfirmDeleteCard from "./components/ConfirmDeleteCard";
 
 function App() {
   const { state } = useContext(UserContext);
@@ -30,7 +32,16 @@ function App() {
           path: "/login",
           element: <Login />,
         },
+        {
+          path: "/users",
+          element: state.isAuth ? <Users /> : <Login />,
+          // element: <Users />,
+        },
       ],
+    },
+    {
+      path: "/test",
+      // element: <ConfirmDeleteCard />,
     },
   ]);
   return (

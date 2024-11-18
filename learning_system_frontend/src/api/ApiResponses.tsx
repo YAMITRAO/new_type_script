@@ -30,7 +30,7 @@ export interface ProjectRegDetails extends LoginUserDetails {
 // }
 
 export interface ApiResponse<T> {
-  message: number;
+  message: string;
   data: T;
 }
 

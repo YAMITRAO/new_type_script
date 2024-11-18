@@ -60,7 +60,7 @@ const Home = () => {
   console.log("context values are :-", state.id, dispatch);
   return (
     <>
-      <div className="h-full w-[100%] box-border">
+      <div className="h-auto w-[100%] box-border">
         {!state.isProjectRegistered && (
           <>
             <div className=" text-3xl text-slate-200 flex justify-center mt-20">
@@ -82,7 +82,7 @@ const Home = () => {
 
         {/* {state.isProjectRegistered && <ProjectView />} */}
         {state.isProjectRegistered && (
-          <div className=" flex flex-col gap-2 items-center h-full box-border w-[100%] mt-4">
+          <div className=" flex flex-col gap-2 items-center box-border w-[100%] mt-4">
             {projectDetails.map((ele, index) => {
               // return <div key={index + "uniqueKety"}>{ele.projectTitle}</div>;
               return (
