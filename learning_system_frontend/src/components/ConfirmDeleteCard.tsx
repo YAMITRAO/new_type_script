@@ -1,4 +1,4 @@
-import { Axios } from "axios";
+import axios, { Axios } from "axios";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import axiosInst from "../api/AxiosInst";
@@ -6,10 +6,12 @@ import axiosInst from "../api/AxiosInst";
 interface ConfirmDelete_int {
   userId: string;
   onCancel: () => void;
+  callBack: () => void;
 }
 const ConfirmDeleteCard: React.FC<ConfirmDelete_int> = ({
   userId,
   onCancel,
+  callBack,
 }) => {
   const [enteredText, setEnteredText] = useState("");
   let confirmationText = "Confirm";
@@ -18,7 +20,7 @@ const ConfirmDeleteCard: React.FC<ConfirmDelete_int> = ({
     console.log("Del user id is", userId);
     if (enteredText === confirmationText) {
       try {
-        const response = await axiosInst.delete(`/user/delete-user/${userId}`, {
+        const response = await axiosInst.post(`/user/delete-user/${userId}`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -26,11 +28,16 @@ const ConfirmDeleteCard: React.FC<ConfirmDelete_int> = ({
         });
 
         console.log("Response is :-", response);
-        toast.success("Deleted Successfully");
+        // toast.success("Deleted Successfully");
+        toast.success(response.data.data.message);
         onCancel();
+        callBack();
         setEnteredText("");
       } catch (error) {
         console.log(error);
+        if (axios.isAxiosError(error)) {
+          toast.error(error.response?.data.message);
+        }
       }
       return;
     }

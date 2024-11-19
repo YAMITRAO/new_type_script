@@ -1,9 +1,7 @@
-import React from "react";
-import userImg from "../assets/user_avatar1.svg";
-
-const Test = () => {
+import userImg from "../../assets/user_avatar1.svg";
+const UserViewDetailCard = () => {
   return (
-    <div className="dark">
+    <div className="">
       <div className="h-fit w-fit  flex items-center justify-center">
         <div className="bg-gray-100 dark:bg-gray-700 relative shadow-xl overflow-hidden hover:shadow-2xl group rounded-xl p-5 transition-all duration-500 transform">
           <div className="flex items-center gap-4">
@@ -55,4 +53,4 @@ const Test = () => {
   );
 };
 
-export default Test;
+export default UserViewDetailCard;

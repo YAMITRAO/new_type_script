@@ -9,6 +9,8 @@ import Home from "./pages/home/Home";
 import { useContext } from "react";
 import UserContext from "./context/user_context/UserContext";
 import Users from "./pages/users/Users";
+import UserView from "./pages/user_view/UserView";
+import Test from "./components/Test";
 // import ConfirmDeleteCard from "./components/ConfirmDeleteCard";
 
 function App() {
@@ -37,11 +39,15 @@ function App() {
           element: state.isAuth ? <Users /> : <Login />,
           // element: <Users />,
         },
+        {
+          path: "/user/view/:userId",
+          element: <UserView />,
+        },
       ],
     },
     {
       path: "/test",
-      // element: <ConfirmDeleteCard />,
+      element: <Test />,
     },
   ]);
   return (

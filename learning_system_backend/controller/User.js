@@ -88,7 +88,9 @@ const userLoginController = async (req, res) => {
         email: email,
       };
       const SECRET_KEY = "fjklsdhkghkjhdfgfgjkdhgdk";
-      const token = await jwt.sign(payload, SECRET_KEY, { expiresIn: 60 * 60 });
+      const token = await jwt.sign(payload, SECRET_KEY, {
+        expiresIn: 60 * 60 * 24,
+      });
       console.log("generated token is :- ", token);
 
       // if password is correct, return user data
@@ -112,6 +114,247 @@ const userLoginController = async (req, res) => {
   }
 };
 
+const getAllUsersController = async (req, res) => {
+  // ========================testing purpose only
+  // const allUsers = await UserModel.find({ role: { $ne: "admin" } });
+  // res.status(200).json({
+  //   message: "All users found",
+  //   data: allUsers,
+  // });
+  // return;
+  // ========================testing purpose only
+
+  try {
+    const userEmail = req?.userMail;
+    console.log("User email id after auth is :-", userEmail);
+
+    // find user using email id:-
+    const user = await UserModel.findOne({ email: userEmail });
+
+    console.log("User founded and that is", user);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    if (user?.role == "admin") {
+      const allUsers = await UserModel.find({
+        role: { $ne: "admin" },
+        isDeleted: { $ne: true },
+      });
+      res.status(200).json({
+        message: "All users found",
+        data: allUsers,
+      });
+    } else {
+      throw new Error("You are not an admin");
+    }
+  } catch (error) {
+    res.status(400).json({
+      message: error && error.message,
+    });
+  }
+};
+
+const getSingleUserAllDetailsController = async (req, res) => {
+  const userMail = req?.userMail; //from auth
+  const userId = req.params.userId; //from api
+
+  try {
+    let user = await UserModel.findById(userId);
+    let admin = await UserModel.findOne({ email: userMail });
+
+    console.log("mail by userId param", user.email);
+    console.log("admin mail by userMail from auth", admin.email);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+    if (admin.email !== user.email && admin.role !== "admin") {
+      throw new Error("Unwanted access is not allowed");
+    }
+
+    // project data of user is
+    const userProjectData = await ProjectModel.find({ owner: userId });
+    let data = {
+      userDetails: user,
+      projectDetails: userProjectData,
+    };
+
+    res.status(200).json({
+      message: "User details found",
+      data: data,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: error && error.message,
+    });
+  }
+};
+
+// delete user
+const deleteUserController = async (req, res) => {
+  const userEmail = req?.userMail;
+  const deleteUserId = req.params.userId;
+
+  try {
+    const admin = await UserModel.findOne({ email: userEmail });
+
+    console.log("Admin founded and that is", admin);
+    if (!admin) {
+      throw new Error("Admin not found");
+    }
+    if (admin?.role == "admin") {
+      const deleteUser = await UserModel.findById(deleteUserId);
+      if (!deleteUser) {
+        throw new Error("User not found");
+      }
+      deleteUser.isDeleted = true;
+      deleteUser.deletedBy = userEmail;
+      deleteUser.deletedAt = new Date();
+      deleteUser.deletedReason = "Deleted By Admin";
+      await deleteUser.save();
+      res.status(200).json({
+        message: "User deleted successfully",
+        data: deleteUser,
+      });
+    } else {
+      throw new Error("You are not an admin");
+    }
+  } catch (error) {
+    res.status(400).json({
+      message: error && error.message,
+    });
+  }
+};
+
+// block user
+const blockUserController = async (req, res) => {
+  const userEmail = req?.userMail;
+  const blockUserId = req.params.userId;
+
+  console.log("Blocked user id is", blockUserId);
+  console.log("Admin id is ", userEmail);
+
+  try {
+    const admin = await UserModel.findOne({ email: userEmail });
+
+    console.log("Admin founded and that is", admin);
+    if (!admin) {
+      throw new Error("Admin not found");
+    }
+    if (admin?.role == "admin") {
+      const blockedUser = await UserModel.findById(blockUserId);
+      if (!blockedUser) {
+        throw new Error("User not found");
+      }
+      blockedUser.isBlocked = true;
+      blockedUser.blockedBy = userEmail;
+      blockedUser.blockedAt = new Date();
+      blockedUser.blockedReason = "Blocked By Admin";
+
+      await blockedUser.save();
+      res.status(200).json({
+        message: "User Blocked successfully",
+        data: blockedUser,
+      });
+    } else {
+      throw new Error("You are not an admin");
+    }
+  } catch (error) {
+    res.status(400).json({
+      message: error && error.message,
+    });
+  }
+};
+
+// unblock user
+const unblockUserController = async (req, res) => {
+  const userEmail = req?.userMail;
+  const blockUserId = req.params.userId;
+
+  console.log("UnBlocked user id is", blockUserId);
+  console.log("Admin id is ", userEmail);
+
+  try {
+    const admin = await UserModel.findOne({ email: userEmail });
+
+    console.log("Admin founded and that is", admin);
+    if (!admin) {
+      throw new Error("Admin not found");
+    }
+    if (admin?.role == "admin") {
+      const unblockedUser = await UserModel.findById(blockUserId);
+      if (!unblockedUser) {
+        throw new Error("User not found");
+      }
+      unblockedUser.isBlocked = false;
+      unblockedUser.unblockedBy = userEmail;
+      unblockedUser.unblockedAt = new Date();
+      unblockedUser.unblockedReason = "UnBlocked By Admin";
+
+      await unblockedUser.save();
+      res.status(200).json({
+        message: "User UnBlocked successfully",
+        data: unblockedUser,
+      });
+    } else {
+      throw new Error("You are not an admin");
+    }
+  } catch (error) {
+    res.status(400).json({
+      message: error && error.message,
+    });
+  }
+};
+
+// edit user
+const editUserController = async (req, res) => {
+  const userEmail = req?.userMail;
+  const editUserId = req.params.userId;
+  const { name, email, dob, userClass, userSec } = req?.body;
+
+  console.log("UnBlocked user id is", editUserId);
+  console.log("Admin id is ", userEmail);
+
+  try {
+    const admin = await UserModel.findOne({ email: userEmail });
+
+    console.log("Admin founded and that is", admin);
+    if (!admin) {
+      throw new Error("Admin not found");
+    }
+    if (admin?.role == "admin") {
+      const editedUser = await UserModel.findById(editUserId);
+      if (!editedUser) {
+        throw new Error("User not found");
+      }
+
+      if (editedUser.email !== email) {
+        throw new Error("Email can't be changed");
+      }
+      editedUser.name = name && name;
+      editedUser.email = email && email;
+      editedUser.dob = dob && dob;
+      editedUser.userClass = userClass && userClass;
+      editedUser.userSec = userSec && userSec;
+      editedUser.editedBy = userEmail;
+      editedUser.editedAt = new Date();
+
+      await editedUser.save();
+      res.status(200).json({
+        message: "User Edited successfully",
+        data: editedUser,
+      });
+    } else {
+      throw new Error("You are not an admin");
+    }
+  } catch (error) {
+    res.status(400).json({
+      message: error && error.message,
+    });
+  }
+};
+
+// project model realted routes
 const userAddProjectController = async (req, res) => {
   console.log("Data at body is:- ", req?.body);
   console.log("Data at auth is ", req.userMail);
@@ -189,56 +432,6 @@ const userGetSingleProjectController = async (req, res) => {
   }
 };
 
-const getAllUsersController = async (req, res) => {
-  // ========================testing purpose only
-  // const allUsers = await UserModel.find({ role: { $ne: "admin" } });
-  // res.status(200).json({
-  //   message: "All users found",
-  //   data: allUsers,
-  // });
-  // return;
-  // ========================testing purpose only
-
-  try {
-    const userEmail = req?.userMail;
-    console.log("User email id after auth is :-", userEmail);
-
-    // find user using email id:-
-    const user = await UserModel.findOne({ email: userEmail });
-
-    console.log("User founded and that is", user);
-    if (!user) {
-      throw new Error("User not found");
-    }
-    if (user?.role == "admin") {
-      const allUsers = await UserModel.find({});
-      res.status(200).json({
-        message: "All users found",
-        data: allUsers,
-      });
-    } else {
-      throw new Error("You are not an admin");
-    }
-  } catch (error) {
-    res.status(400).json({
-      message: error && error.message,
-    });
-  }
-};
-
-// delete user
-const deleteUserController = async (req, res) => {
-  const userEmail = req?.userMail;
-  const deleteUserId = req.params.userId;
-
-  try {
-  } catch (error) {
-    res.status(400).json({
-      message: error && error.message,
-    });
-  }
-};
-
 module.exports = {
   userSignUpController,
   userLoginController,
@@ -247,4 +440,8 @@ module.exports = {
   userGetSingleProjectController,
   getAllUsersController,
   deleteUserController,
+  blockUserController,
+  unblockUserController,
+  editUserController,
+  getSingleUserAllDetailsController,
 };

@@ -1,5 +1,5 @@
 body {
-  @apply bg-[#1f1f1f] border-[#ff006e];
+  @apply bg-[#1f1f1f];
 }
 
 /* In your custom CSS file (e.g., styles.css) */

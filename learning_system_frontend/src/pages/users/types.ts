@@ -3,4 +3,7 @@ export interface SingelUser {
   name: string;
   email: string;
   dob: string;
+  userClass: string;
+  userSec: string;
+  isBlocked: boolean;
 }

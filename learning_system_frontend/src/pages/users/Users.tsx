@@ -6,6 +6,7 @@ import axiosInst from "../../api/AxiosInst";
 import { ApiResponse } from "../../api/ApiResponses";
 import axios from "axios";
 import { toast } from "react-toastify";
+import UserSearch from "./UserSearch";
 
 const Users = () => {
   const [users, setUsers] = useState<SingelUser[]>([
@@ -14,8 +15,13 @@ const Users = () => {
       name: "John Doe",
       email: "john@example.com",
       dob: "20-10-2001",
+      userClass: "none",
+      userSec: "none",
+      isBlocked: false,
     },
   ]);
+
+  const [searchInput, setSearchInput] = useState<string>("");
 
   const fectchAllUsers = async () => {
     try {
@@ -45,19 +51,41 @@ const Users = () => {
 
   console.log("Users are :- ", users);
   return (
-    <div className="mt-6 mb-2 mx-2 flex gap-4 flex-wrap justify-center">
-      {users.map((val) => {
-        return (
-          <UserCard
-            key={val._id}
-            _id={val._id}
-            name={val.name}
-            dob={val.dob}
-            email={val.email}
-            imgUrl={userImg}
-          />
-        );
-      })}
+    <div className="w-full h-auto">
+      {/* user serach bar */}
+      <UserSearch onSearch={(data) => setSearchInput(data)} />
+
+      <div className="mt-6 mb-2 mx-2 flex gap-4 flex-wrap justify-center">
+        {/* users list */}
+        {users
+          .filter((val) => {
+            return (
+              val.name?.toLowerCase().includes(searchInput.toLowerCase()) ||
+              val.email?.toLowerCase().includes(searchInput.toLowerCase()) ||
+              val.dob?.includes(searchInput.toLowerCase()) ||
+              val.userClass
+                ?.toLowerCase()
+                .includes(searchInput.toLowerCase()) ||
+              val.userSec?.toLowerCase().includes(searchInput.toLowerCase())
+            );
+          })
+          .map((val) => {
+            return (
+              <UserCard
+                key={val._id}
+                _id={val._id}
+                name={val.name}
+                dob={val.dob}
+                email={val.email}
+                userClass={val.userClass ? val.userClass : "none"}
+                userSec={val.userSec ? val.userSec : "none"}
+                isBlocked={val.isBlocked}
+                imgUrl={userImg}
+                callBack={() => fectchAllUsers()}
+              />
+            );
+          })}
+      </div>
     </div>
   );
 };

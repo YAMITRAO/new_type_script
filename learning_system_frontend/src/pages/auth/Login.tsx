@@ -107,7 +107,7 @@ const Login = () => {
       // set data to context
       dispatch({ type: "SET_USER", payload: payload });
       setIsLoading(false);
-      navigate("/");
+      // navigate("/");
     } catch (error) {
       setIsLoading(false);
       console.log("error is ", error);
