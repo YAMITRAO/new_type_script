@@ -1,5 +1,6 @@
-import userImg from "../../assets/user_avatar1.svg";
-const UserViewDetailCard = () => {
+import userImg from "../../../assets/user_avatar1.svg";
+
+const ViewUserDetailsCard = () => {
   return (
     <div className="">
       <div className="h-fit w-fit  flex items-center justify-center">
@@ -11,7 +12,7 @@ const UserViewDetailCard = () => {
             />
             <div className="w-fit transition-all transform duration-500">
               <h1 className="text-gray-600 dark:text-gray-200 font-bold">
-                Mary Phiri
+                "Test User"
               </h1>
               <p className="text-gray-400">Senior Developer</p>
               <a className="text-xs text-gray-500 dark:text-gray-200 group-hover:opacity-100 opacity-0 transform transition-all delay-300 duration-500">
@@ -53,4 +54,4 @@ const UserViewDetailCard = () => {
   );
 };
 
-export default UserViewDetailCard;
+export default ViewUserDetailsCard;

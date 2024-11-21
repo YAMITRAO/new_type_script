@@ -1,15 +1,13 @@
-import ProgressRighWithImg from "../../components/ProgressRingWithImg";
+import ProgressRighWithImg from "../../../components/ProgressRingWithImg";
 import { MdDelete, MdEdit } from "react-icons/md";
-// import { MdModeEdit } from "react-icons/md";
 import { MdBlock } from "react-icons/md";
 import { CgUnblock } from "react-icons/cg";
 import { GoCheckCircle } from "react-icons/go";
 import { RxCrossCircled } from "react-icons/rx";
-import { MdOutlinePreview } from "react-icons/md";
 import { IoEye } from "react-icons/io5";
-import ConfirmDeleteCard from "../../components/ConfirmDeleteCard";
+import ConfirmDeleteCard from "../../../components/ConfirmDeleteCard";
 import { useState } from "react";
-import axiosInst from "../../api/AxiosInst";
+import axiosInst from "../../../api/AxiosInst";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { Link } from "react-router-dom";

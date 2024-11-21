@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import UserCard from "./UserCard";
-import userImg from "../../assets/user_avatar.jpg";
+import userImg from "../../../assets/user_avatar.jpg";
 import { SingelUser } from "./types";
-import axiosInst from "../../api/AxiosInst";
-import { ApiResponse } from "../../api/ApiResponses";
 import axios from "axios";
 import { toast } from "react-toastify";
 import UserSearch from "./UserSearch";
+import { ApiResponse } from "../../../api/ApiResponses";
+import axiosInst from "../../../api/AxiosInst";
 
 const Users = () => {
   const [users, setUsers] = useState<SingelUser[]>([

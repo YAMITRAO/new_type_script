@@ -22,13 +22,6 @@ export interface ProjectRegDetails extends LoginUserDetails {
   projectDescription: string;
 }
 
-// export interface SingleProjectDetails {
-//   projectTitle: string;
-//   teamName: string;
-//   teamMembers: string;
-//   projectDescription: string;
-// }
-
 export interface ApiResponse<T> {
   message: string;
   data: T;

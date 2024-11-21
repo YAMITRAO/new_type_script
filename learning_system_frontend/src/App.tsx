@@ -8,10 +8,10 @@ import Login from "./pages/auth/Login";
 import Home from "./pages/home/Home";
 import { useContext } from "react";
 import UserContext from "./context/user_context/UserContext";
-import Users from "./pages/users/Users";
-import UserView from "./pages/user_view/UserView";
+import Users from "./pages/users/all_users/Users";
 import Test from "./components/Test";
-// import ConfirmDeleteCard from "./components/ConfirmDeleteCard";
+import ViewUser from "./pages/users/view_user/ViewUser";
+import RegisterProject from "./pages/projects/project_reg/RegisterProject";
 
 function App() {
   const { state } = useContext(UserContext);
@@ -28,20 +28,23 @@ function App() {
         },
         {
           path: "/signup",
-          element: <SignUp />,
+          element: state.isAuth ? <Home /> : <SignUp />,
         },
         {
           path: "/login",
-          element: <Login />,
+          element: state.isAuth ? <Home /> : <Login />,
         },
         {
           path: "/users",
           element: state.isAuth ? <Users /> : <Login />,
-          // element: <Users />,
         },
         {
           path: "/user/view/:userId",
-          element: <UserView />,
+          element: state.isAuth ? <ViewUser /> : <Login />,
+        },
+        {
+          path: "register-project",
+          element: <RegisterProject />,
         },
       ],
     },
