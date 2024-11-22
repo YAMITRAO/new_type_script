@@ -2,27 +2,30 @@ const mongoose = require("mongoose");
 
 const projectSchema = new mongoose.Schema(
   {
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Users",
+    },
     projectTitle: {
       type: String,
       default: null,
       required: true,
     },
-    teamName: {
-      type: String,
-      default: "",
-    },
-    teamMembers: {
-      type: String,
-      default: "",
-    },
     projectDescription: {
       type: String,
       default: "",
     },
-    owner: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "UserModel",
-    },
+    // projectRequirement: {
+    //   // different schema
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "ProjectRequirementModel",
+    // },
+    // projectOtherFields: {
+    //   // different schema
+    // },
+    // projectInvitations: {
+    //   // different schema
+    // },
   },
   { timestamps: true }
 );

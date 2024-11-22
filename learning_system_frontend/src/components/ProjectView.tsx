@@ -5,16 +5,14 @@ import { MdDelete } from "react-icons/md";
 interface projectViewProps_int {
   key?: string;
   projectTitle: string;
-  teamName: string;
-  teamMembers: string;
+  teamName?: string;
+  teamMembers?: string;
   projectDescription: string;
   role: string;
 }
 
 const ProjectView: React.FC<projectViewProps_int> = ({
   projectTitle,
-  teamName,
-  teamMembers,
   projectDescription,
   role,
 }) => {
@@ -44,12 +42,12 @@ const ProjectView: React.FC<projectViewProps_int> = ({
             <span className=" text-yellow-600">Title:</span> {projectTitle}
           </h5>
 
-          <div className="text-slate text-slate-300 font-bold uppercase">
+          {/* <div className="text-slate text-slate-300 font-bold uppercase">
             <span className=" text-yellow-600 ">Team:</span> {teamName} &nbsp;
             <span className="text-white font-bold font-mono">
               ({teamMembers})
             </span>
-          </div>
+          </div> */}
           <p className="mb-3 font-normal text-gray-700 dark:text-gray-400 text-justify pt-2">
             <span className=" text-yellow-600">Desc:</span>
             {projectDescription}

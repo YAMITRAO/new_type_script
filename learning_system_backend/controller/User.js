@@ -2,6 +2,8 @@ const UserModel = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const ProjectModel = require("../models/Projects");
+const ProjectRequirementModel = require("../models/ProjectRequirements");
+const ProjectInvitationModel = require("../models/ProjectInvitation");
 
 // signup controller
 const userSignUpController = async (req, res) => {
@@ -358,6 +360,7 @@ const editUserController = async (req, res) => {
 const userAddProjectController = async (req, res) => {
   console.log("Data at body is:- ", req?.body);
   console.log("Data at auth is ", req.userMail);
+
   try {
     // check user exist
     const user = await UserModel.findOne({ email: req.userMail });
@@ -366,22 +369,35 @@ const userAddProjectController = async (req, res) => {
       throw new Error("User doesn't exist");
     }
 
-    // check is user prev reg or not
-    if (user.isProjectRegistered) {
-      throw new Error("Already registered.");
-    }
-
-    console.log("Project is not registered ...hence ...");
     // add project to user
     const addProject = await new ProjectModel({
-      ...req?.body,
-      owner: user._id,
+      createdBy: user._id,
+      projectTitle: req?.body.projectTitle,
+      projectDescription: req?.body.projectDesc,
     });
-
-    // update isProjectRegistered to true
-    user.isProjectRegistered = true;
     await addProject.save();
     await user.save();
+
+    // check if body has data of requirement
+    if (req?.body?.requirement) {
+      const addRequirement = await new ProjectRequirementModel({
+        createdBy: user._id,
+        projectRefrence: addProject._id,
+        requirementOnCreation: req?.body?.requirement,
+      });
+      await addRequirement.save();
+    }
+
+    // check if invitation is the body
+    if (req?.body?.invitation) {
+      console.log("Invitation fields also here");
+      const addInvitation = await new ProjectInvitationModel({
+        createdBy: user._id,
+        projectRefrence: addProject._id,
+        invitedUsers: req?.body?.invitation,
+      });
+      await addInvitation.save();
+    }
 
     res.status(200).json({
       message: "Project Registered Successfully",
@@ -405,7 +421,7 @@ const userGetSingleProjectController = async (req, res) => {
       throw new Error("User not found");
     }
     const userId = user._id;
-    // console.log("User id is :- ", userId);
+    console.log("User id is :- ", userId);
 
     // find project related to user
     // let project = await ProjectModel.find({ owner: userId });
@@ -415,11 +431,14 @@ const userGetSingleProjectController = async (req, res) => {
     );
     let project =
       user.role == "admin"
-        ? await ProjectModel.find({})
-        : await ProjectModel.find({ owner: userId });
-    if (!project.length) {
-      throw new Error("Project not found");
-    }
+        ? await ProjectModel.find({}).populate("createdBy", "name email ")
+        : await ProjectModel.find({ createdBy: userId }).populate(
+            "createdBy",
+            "name email "
+          );
+    // if (!project.length) {
+    //   throw new Error("Project not found");
+    // }
 
     res.status(200).json({
       message: "Project found",

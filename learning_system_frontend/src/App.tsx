@@ -44,7 +44,7 @@ function App() {
         },
         {
           path: "register-project",
-          element: <RegisterProject />,
+          element: state.isAuth ? <RegisterProject /> : <Login />,
         },
       ],
     },

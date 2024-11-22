@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { IoAddCircle } from "react-icons/io5";
 import { MdDelete } from "react-icons/md";
+import axiosInst from "../../../api/AxiosInst";
 
 const RegisterProject = () => {
   const [count, setCount] = useState(0);
@@ -9,27 +10,9 @@ const RegisterProject = () => {
   const [projectTitle, setProjectTitle] = useState("");
   const [projectDesc, setProjectDesc] = useState("");
 
-  const [requirement, setRequirement] = useState({});
-  const [quantity, setQuantity] = useState({});
+  const [requirement, setRequirement] = useState<Record<string, string>>();
+  const [quantity, setQuantity] = useState<Record<string, string>>();
 
-  // onchange handler FOR requirement
-  const onChangehandlerReq = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    console.log(name, value);
-    setRequirement((prev) => {
-      return { ...prev, [name]: value };
-    });
-  };
-
-  const onChangehandlerQty = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    console.log(name, value);
-    setQuantity((prev) => {
-      return { ...prev, [name]: value };
-    });
-  };
-
-  console.log(requirement, quantity);
   // add requirement fields
   const addRequirementFields = () => {
     setCount((pre) => pre + 1);
@@ -43,14 +26,84 @@ const RegisterProject = () => {
     setRequirementCount(arr);
   };
 
-  console.log(requirementCount);
+  // onchange handler for requirement
+  const onChangehandlerReq = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    // console.log(name, value);
+    setRequirement((prev) => {
+      return { ...prev, [name]: value };
+    });
+  };
+  const onChangehandlerQty = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    // console.log(name, value);
+    setQuantity((prev) => {
+      return { ...prev, [name]: value };
+    });
+  };
+
+  // submit data to related api
+  const handleSubmitToApi = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // merging qty and req in single object
+    let req_qty_mapped: Record<string, string> = {};
+    if (requirement && quantity) {
+      Object.keys(requirement).map((key) => {
+        req_qty_mapped[key] = quantity[key];
+      });
+    }
+    const data = {
+      projectTitle,
+      projectDesc,
+      requirement: req_qty_mapped && req_qty_mapped,
+
+      // requirementFromLab: {
+      //   comp1: { quantity: 20 },
+      //   comp2: { quantity: 30 },
+      //   comp3: { quantity: 40 },
+      // },
+
+      // invitation: {
+      //   invitation1: { invitationMail: "test2@gmail.com" },
+      //   invitation2: { invitationMail: "test3@gmail.com" },
+      //   invitation3: { invitationMail: "test4@gmail.com" },
+      // },
+    };
+    console.log("Data at api is", data);
+
+    try {
+      const response = await axiosInst.post(
+        "/user/add-project",
+        {
+          ...data,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        }
+      );
+
+      console.log("Response is", response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  console.log("Requirement and qty is", requirement, quantity);
 
   return (
     <>
       {/* register project form container */}
       <div className="w-full h-full  overflow-y-auto p-2 custom-scrollbar">
         {/* project registration project */}
-        <form className="pt-6 p-4 flex flex-col " autoComplete="off">
+        <form
+          className=" p-10 flex flex-col "
+          autoComplete="off"
+          onSubmit={handleSubmitToApi}
+        >
           {/* project title  */}
           <div className="relative z-0 w-full mb-5 group flex flex-col-reverse">
             <input
@@ -89,7 +142,7 @@ const RegisterProject = () => {
             {/* requirement input container */}
             <div className="flex gap-6 flex-wrap w-full justify-center">
               {requirementCount.map((val, index, arr) => (
-                <div className="w-full flex gap-4 " key={val}>
+                <div className="w-full flex gap-4" key={val}>
                   {/* component name field */}
                   <input
                     type="text"

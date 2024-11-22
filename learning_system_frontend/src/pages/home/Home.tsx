@@ -7,8 +7,8 @@ import { ApiResponse } from "../../api/ApiResponses";
 
 interface projectDetails {
   projectTitle: string;
-  teamName: string;
-  teamMembers: string;
+  teamName?: string;
+  teamMembers?: string;
   projectDescription: string;
 }
 
@@ -61,7 +61,7 @@ const Home = () => {
   return (
     <>
       <div className="h-auto w-[100%] box-border">
-        {!state.isProjectRegistered && (
+        {state.isProjectRegistered && (
           <>
             <div className=" text-3xl text-slate-200 flex justify-center mt-20">
               Register Project: &nbsp;
@@ -81,7 +81,7 @@ const Home = () => {
         )}
 
         {/* {state.isProjectRegistered && <ProjectView />} */}
-        {state.isProjectRegistered && (
+        {!state.isProjectRegistered && (
           <div className=" flex flex-col gap-2 items-center box-border w-[100%] mt-4">
             {projectDetails.map((ele, index) => {
               // return <div key={index + "uniqueKety"}>{ele.projectTitle}</div>;
@@ -90,8 +90,6 @@ const Home = () => {
                   role={state.role}
                   key={index + "uniqueKety"}
                   projectTitle={ele.projectTitle}
-                  teamName={ele.teamName}
-                  teamMembers={ele.teamMembers}
                   projectDescription={ele.projectDescription}
                 />
               );
