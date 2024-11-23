@@ -431,10 +431,13 @@ const userGetSingleProjectController = async (req, res) => {
     );
     let project =
       user.role == "admin"
-        ? await ProjectModel.find({}).populate("createdBy", "name email ")
+        ? await ProjectModel.find({}).populate(
+            "createdBy",
+            "name email userClass userSec"
+          )
         : await ProjectModel.find({ createdBy: userId }).populate(
             "createdBy",
-            "name email "
+            "name email userClass userSec"
           );
     // if (!project.length) {
     //   throw new Error("Project not found");

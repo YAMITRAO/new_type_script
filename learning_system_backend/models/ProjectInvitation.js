@@ -3,8 +3,7 @@ const mongoose = require("mongoose");
 const invitationSchema = new mongoose.Schema(
   {
     invitationMail: { type: String, required: true, default: null },
-    isInvitationAccepted: { type: Boolean, required: false, default: false },
-    isInvitationRejected: { type: Boolean, required: false, default: false },
+    invitationStatus: { type: String, default: "pending" }, // pending, accepted, rejected
     invitationAcceptedAt: { type: Date, default: null },
   },
   { timestamps: true }

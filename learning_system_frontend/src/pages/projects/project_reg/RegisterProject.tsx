@@ -1,11 +1,21 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { IoAddCircle } from "react-icons/io5";
 import { MdDelete } from "react-icons/md";
 import axiosInst from "../../../api/AxiosInst";
+import UserContext from "../../../context/user_context/UserContext";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const RegisterProject = () => {
-  const [count, setCount] = useState(0);
-  const [requirementCount, setRequirementCount] = useState<string[]>([]);
+  const { state } = useContext(UserContext);
+  const navigate = useNavigate();
+
+  // default one requirement field
+  const [count, setCount] = useState(1);
+  const [requirementCount, setRequirementCount] = useState<string[]>([
+    `value0`,
+  ]);
 
   const [projectTitle, setProjectTitle] = useState("");
   const [projectDesc, setProjectDesc] = useState("");
@@ -14,7 +24,25 @@ const RegisterProject = () => {
   const [quantity, setQuantity] = useState<Record<string, string>>();
 
   // add requirement fields
+  // it is outside becaus it is also used in return block
+  const [isInputSame, setIsInputSame] = useState(false);
+
   const addRequirementFields = () => {
+    // When the requirements is same
+    if (isInputSame) {
+      toast.error("Requirement cannot be same");
+      return;
+    }
+    if (requirement && quantity) {
+      let valuesArray = Object.values(requirement);
+      if (requirementCount.length !== valuesArray.length) {
+        toast.error("Enter previous fields first");
+        return;
+      }
+    } else {
+      toast.error("Enter previous fields first");
+      return;
+    }
     setCount((pre) => pre + 1);
     setRequirementCount((prev) => [...prev, `value${count}`]);
   };
@@ -22,18 +50,63 @@ const RegisterProject = () => {
   const deleteRequirementFields = (
     e: React.MouseEvent<HTMLButtonElement | HTMLTextAreaElement>
   ) => {
+    let deletedValue = e.currentTarget.value;
     let arr = requirementCount.filter((val) => val !== e.currentTarget.value);
     setRequirementCount(arr);
+
+    //
+    if (requirement) {
+      console.log("deleted value is", requirement[deletedValue]);
+
+      //  if deleted value is the last value then
+      let arrOfRequirement = Object.values(requirement);
+      console.log(
+        "conflicted value is",
+        arrOfRequirement[arrOfRequirement.length - 1]
+      );
+
+      if (
+        arrOfRequirement[arrOfRequirement.length - 1] ===
+        requirement[deletedValue]
+      ) {
+        setIsInputSame(false);
+      }
+    }
+
+    if (requirement && quantity) {
+      delete requirement[deletedValue];
+      delete quantity[deletedValue];
+    }
+
+    // if in colflic but deleted
+    if (arr.length < 2) {
+      setIsInputSame(false);
+      return;
+    }
   };
 
   // onchange handler for requirement
-  const onChangehandlerReq = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+  function onChangehandlerReq(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
-    // console.log(name, value);
+    setIsInputSame(false);
+    if (requirement) {
+      Object.values(requirement).map((val) => {
+        if (val.toLocaleLowerCase() === value.toLocaleLowerCase()) {
+          setIsInputSame((prev) => !prev);
+          console.log("input founded.....same", isInputSame);
+          return;
+        }
+      });
+
+      // console.log("input founded.....wrong", isInputSame);
+    }
     setRequirement((prev) => {
       return { ...prev, [name]: value };
     });
-  };
+
+    // to remove red color from input field occured due to same input
+  }
   const onChangehandlerQty = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     // console.log(name, value);
@@ -46,11 +119,16 @@ const RegisterProject = () => {
   const handleSubmitToApi = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    // if requirements are same then prevent form submission
+    if (isInputSame) {
+      toast.error("Requirements can't be same");
+      return;
+    }
     // merging qty and req in single object
     let req_qty_mapped: Record<string, string> = {};
     if (requirement && quantity) {
       Object.keys(requirement).map((key) => {
-        req_qty_mapped[key] = quantity[key];
+        req_qty_mapped[requirement[key]] = quantity[key];
       });
     }
     const data = {
@@ -64,13 +142,14 @@ const RegisterProject = () => {
       //   comp3: { quantity: 40 },
       // },
 
-      // invitation: {
-      //   invitation1: { invitationMail: "test2@gmail.com" },
-      //   invitation2: { invitationMail: "test3@gmail.com" },
-      //   invitation3: { invitationMail: "test4@gmail.com" },
-      // },
+      invitation: {
+        ownerInvitation: {
+          invitationMail: state.email,
+          invitationStatus: "accepted",
+          invitationAcceptedAt: new Date(),
+        },
+      },
     };
-    console.log("Data at api is", data);
 
     try {
       const response = await axiosInst.post(
@@ -85,14 +164,18 @@ const RegisterProject = () => {
           },
         }
       );
-
-      console.log("Response is", response);
+      // console.log("Response is", response?.data?.message);
+      toast.success(response?.data?.message || "Project created successfully");
+      navigate("/projects");
     } catch (error) {
-      console.log(error);
+      if (axios.isAxiosError(error)) {
+        toast.error(error?.response?.data?.message || "Something went wrong");
+      }
     }
   };
 
-  console.log("Requirement and qty is", requirement, quantity);
+  // console.log("Requirement and qty is", requirement, quantity);
+  // console.log("Requirement count is:-", requirementCount);
 
   return (
     <>
@@ -130,13 +213,13 @@ const RegisterProject = () => {
               <h2 className="text-gray-500 font-medium text-lg">
                 Requirements
               </h2>
-              <button
+              {/* <button
                 type="button"
                 className="text-2xl mt-1 text-gray-400 bg-gray-600 rounded-full hover:scale-100 hover:bg-gray-200 transition-all "
                 onClick={addRequirementFields}
               >
                 <IoAddCircle />
-              </button>
+              </button> */}
             </div>
 
             {/* requirement input container */}
@@ -145,6 +228,12 @@ const RegisterProject = () => {
                 <div className="w-full flex gap-4" key={val}>
                   {/* component name field */}
                   <input
+                    style={{
+                      color:
+                        isInputSame && index === arr.length - 1
+                          ? "#e63946"
+                          : "",
+                    }}
                     type="text"
                     name={val}
                     className="pb-1 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark: text-gray-200 dark:border-gray-600 dark:focus:border-gray-400 focus:outline-none  focus:border-gray-800
@@ -155,6 +244,12 @@ const RegisterProject = () => {
                   />
                   {/* quantity field */}
                   <input
+                    style={{
+                      color:
+                        isInputSame && index === arr.length - 1
+                          ? "#e63946"
+                          : "",
+                    }}
                     type="number"
                     name={val}
                     className=" pb-1 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark: text-gray-200 dark:border-gray-600 dark:focus:border-gray-400 focus:outline-none  focus:border-gray-800 indent-2 placeholder-gray-600"
@@ -196,7 +291,7 @@ const RegisterProject = () => {
               name="projectDescription"
               value={projectDesc}
               className="pb-1 pt-1 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark: text-gray-200 dark:border-gray-600 dark:focus:border-gray-400 focus:outline-none  focus:border-gray-800
-                placeholder-gray-600 indent-2 peer"
+                placeholder-gray-600 indent-2 peer custom-scrollbar"
               onChange={(e) => setProjectDesc(e.target.value)}
               required
             />

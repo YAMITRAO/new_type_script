@@ -12,6 +12,7 @@ import Users from "./pages/users/all_users/Users";
 import Test from "./components/Test";
 import ViewUser from "./pages/users/view_user/ViewUser";
 import RegisterProject from "./pages/projects/project_reg/RegisterProject";
+import Projects from "./pages/projects/all_projects/Projects";
 
 function App() {
   const { state } = useContext(UserContext);
@@ -45,6 +46,10 @@ function App() {
         {
           path: "register-project",
           element: state.isAuth ? <RegisterProject /> : <Login />,
+        },
+        {
+          path: "/projects",
+          element: state.isAuth ? <Projects /> : <Login />,
         },
       ],
     },

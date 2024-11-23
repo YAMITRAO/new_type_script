@@ -13,7 +13,7 @@ const Layout = () => {
         <NavBar />
         <div className=" w-full box-border h-auto flex overflow-y-auto ">
           {state.isAuth && <SideBar />}
-          <main className=" box-border w-full h-[calc(100vh-56px)] overflow-y-auto custom-scrollbar pb-2">
+          <main className=" box-border w-full h-[calc(100vh-56px)] overflow-y-auto custom-scrollbar pb-2 relative">
             <Outlet />
           </main>
         </div>
