@@ -13,6 +13,8 @@ import Test from "./components/Test";
 import ViewUser from "./pages/users/view_user/ViewUser";
 import RegisterProject from "./pages/projects/project_reg/RegisterProject";
 import Projects from "./pages/projects/all_projects/Projects";
+import ProjectView from "./pages/projects/project_view/ProjectView";
+import Invitationcard from "./pages/projects/project_view/Invitationcard";
 
 function App() {
   const { state } = useContext(UserContext);
@@ -51,11 +53,16 @@ function App() {
           path: "/projects",
           element: state.isAuth ? <Projects /> : <Login />,
         },
+        {
+          path: "/project/view/:projectId",
+          element: state.isAuth ? <ProjectView /> : <Login />,
+        },
       ],
     },
     {
       path: "/test",
-      element: <Test />,
+      // element: <Test />,
+      element: <Invitationcard />,
     },
   ]);
   return (

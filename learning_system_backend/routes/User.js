@@ -11,6 +11,10 @@ const {
   unblockUserController,
   editUserController,
   getSingleUserAllDetailsController,
+  editProjectApprovalStatusController,
+  userGetAllProjectController,
+  editProjectDetailsController,
+  findSearchedMailForInvitationController,
 } = require("../controller/User");
 const Auth = require("../middleware/Auth");
 
@@ -39,10 +43,36 @@ userRouter.post("/unblock-user/:userId", Auth, unblockUserController);
 // edit user
 userRouter.post("/edit-user/:userId", Auth, editUserController);
 
+// find user for project invitation
+userRouter.post(
+  "/find-invitation-mail",
+  Auth,
+  findSearchedMailForInvitationController
+);
+
 // add_project
 userRouter.post("/add-project", Auth, userAddProjectController);
 
-// get single project
-userRouter.get("/get-first-project", Auth, userGetSingleProjectController);
+// get all project data
+userRouter.get("/get-all-projects", Auth, userGetAllProjectController);
+// get single project data
+userRouter.get(
+  "/get-single-project/:projectId",
+  Auth,
+  userGetSingleProjectController
+);
+// edit project approval status
+userRouter.patch(
+  "/approve-as-success/:projectId",
+  Auth,
+  editProjectApprovalStatusController
+);
+
+// edit project details
+userRouter.put(
+  "/edit-project-details/:projectId",
+  Auth,
+  editProjectDetailsController
+);
 
 module.exports = userRouter;

@@ -356,6 +356,27 @@ const editUserController = async (req, res) => {
   }
 };
 
+// find searched mail for invitation
+const findSearchedMailForInvitationController = async (req, res) => {
+  console.log(req.body.email);
+  try {
+    let searchedMail = req?.body?.email;
+    const findUser = await UserModel.findOne({ email: searchedMail });
+    console.log("User value is ", findUser);
+    if (!findUser) {
+      throw new Error("User not found");
+    }
+    res.status(200).json({
+      message: "Email found",
+      data: { searchedMail: searchedMail, searchstatus: "Founded" },
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: error && error.message,
+    });
+  }
+};
+
 // project model realted routes
 const userAddProjectController = async (req, res) => {
   console.log("Data at body is:- ", req?.body);
@@ -386,6 +407,8 @@ const userAddProjectController = async (req, res) => {
         requirementOnCreation: req?.body?.requirement,
       });
       await addRequirement.save();
+      // add requirement id to the project collection
+      addProject.projectRequirement = addRequirement._id;
     }
 
     // check if invitation is the body
@@ -397,7 +420,12 @@ const userAddProjectController = async (req, res) => {
         invitedUsers: req?.body?.invitation,
       });
       await addInvitation.save();
+      // add projectInivtations ref id to project collection
+      addProject.projectInvitations = addInvitation._id;
     }
+
+    await addProject.save();
+    await user.save();
 
     res.status(200).json({
       message: "Project Registered Successfully",
@@ -410,7 +438,54 @@ const userAddProjectController = async (req, res) => {
   }
 };
 
+// get single Project
 const userGetSingleProjectController = async (req, res) => {
+  const userEmail = req?.userMail;
+  const projectId = req?.params.projectId;
+  console.log("Project id is:- ", projectId);
+  console.log("User email is:-", userEmail);
+  try {
+    // find user using email id:-
+    const user = await UserModel.findOne({ email: userEmail });
+    // console.log("User founded and that is", user);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const userId = user._id;
+    console.log("User id is :- ", userId);
+
+    // find project related to user
+    // let project = await ProjectModel.find({ owner: userId });
+    console.log(
+      "Role of the user is :=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-",
+      user.role
+    );
+    let project =
+      user.role == "admin"
+        ? await ProjectModel.findOne({ _id: projectId })
+            .populate("createdBy", "name email userClass userSec")
+            .populate("projectRequirement", "requirementOnCreation")
+        : await ProjectModel.findOne({ _id: projectId }).populate(
+            "createdBy",
+            "name email userClass userSec"
+          );
+    // if (!project.length) {
+    //   throw new Error("Project not found");
+    // }
+
+    res.status(200).json({
+      message: "Project found",
+      data: project,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: error && error.message,
+    });
+  }
+};
+
+// get all project
+const userGetAllProjectController = async (req, res) => {
   const userEmail = req?.userMail;
   console.log("User email is:-", userEmail);
   try {
@@ -454,16 +529,105 @@ const userGetSingleProjectController = async (req, res) => {
   }
 };
 
+const editProjectApprovalStatusController = async (req, res) => {
+  try {
+    const projectId = req?.params?.projectId;
+    const adminMain = req?.userMail;
+    const approvalStatus = req?.body?.approvalStatus;
+    console.log("admin mail id :- ", adminMain);
+    console.log("project id ", projectId);
+    console.log("Approval status is:-", approvalStatus);
+
+    // find user to check for admin
+    const admin = await UserModel.findOne({ email: adminMain });
+
+    console.log("Admin founded and that is", admin);
+    if (!admin) {
+      throw new Error("Admin not found");
+    }
+
+    if (admin?.role !== "admin") {
+      throw new Error("Only admin can edit project");
+    }
+    const editProject = await ProjectModel.findById(projectId);
+    if (!editProject) {
+      throw new Error("Project Not found");
+    }
+    if (
+      editProject.approvalStatus === "rejected" &&
+      approvalStatus === "success"
+    ) {
+      throw new Error("This Operation can't be allowed");
+    }
+
+    editProject.approvalStatus = approvalStatus;
+    await editProject.save();
+
+    res.status(200).json({
+      message: "Project status updated successfully...",
+      data: editProject,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: error && error.message,
+    });
+  }
+};
+
+const editProjectDetailsController = async (req, res) => {
+  try {
+    const projectId = req?.params?.projectId;
+    const adminMain = req?.userMail;
+    const { projectTitle, projectDescription } = req?.body;
+    console.log("admin mail id :- ", adminMain);
+    console.log("project id ", projectId);
+    console.log("Title and status is:-", projectTitle, projectDescription);
+
+    // find user to check for admin
+    const admin = await UserModel.findOne({ email: adminMain });
+
+    console.log("Admin founded and that is", admin);
+    if (!admin) {
+      throw new Error("Admin not found");
+    }
+
+    if (admin?.role !== "admin") {
+      throw new Error("Only admin can edit project");
+    }
+    const editProject = await ProjectModel.findById(projectId);
+    if (!editProject) {
+      throw new Error("Project Not found");
+    }
+
+    editProject.projectTitle = projectTitle;
+    editProject.projectDescription = projectDescription;
+    await editProject.save();
+
+    res.status(200).json({
+      message: "Project edited successfully...",
+      data: editProject,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: error && error.message,
+    });
+  }
+};
+
 module.exports = {
   userSignUpController,
   userLoginController,
   userAddProjectController,
   userGetController,
+  findSearchedMailForInvitationController,
   userGetSingleProjectController,
+  userGetAllProjectController,
   getAllUsersController,
   deleteUserController,
   blockUserController,
   unblockUserController,
   editUserController,
   getSingleUserAllDetailsController,
+  editProjectApprovalStatusController,
+  editProjectDetailsController,
 };

@@ -287,7 +287,7 @@ const RegisterProject = () => {
           {/*project Description  */}
           <div className="w-full flex flex-col-reverse ">
             <textarea
-              rows={1}
+              rows={6}
               name="projectDescription"
               value={projectDesc}
               className="pb-1 pt-1 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark: text-gray-200 dark:border-gray-600 dark:focus:border-gray-400 focus:outline-none  focus:border-gray-800

@@ -19,17 +19,19 @@ const projectSchema = new mongoose.Schema(
       type: String,
       default: "pending", // pending, accepted, rejected
     },
-    // projectRequirement: {
-    //   // different schema
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: "ProjectRequirementModel",
-    // },
+    projectRequirement: {
+      // different schema
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ProjectRequirement",
+    },
     // projectOtherFields: {
     //   // different schema
     // },
-    // projectInvitations: {
-    //   // different schema
-    // },
+    projectInvitations: {
+      // different schema
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "projectInvitation",
+    },
   },
   { timestamps: true }
 );

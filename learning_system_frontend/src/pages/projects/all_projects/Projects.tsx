@@ -1,15 +1,15 @@
 import { useContext, useEffect, useState } from "react";
 import UserContext from "../../../context/user_context/UserContext";
-import ProjectView from "../../../components/ProjectView";
 import axiosInst from "../../../api/AxiosInst";
 import { ApiResponse } from "../../../api/ApiResponses";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { MdLibraryAdd } from "react-icons/md";
 import { MdOutlineAddComment } from "react-icons/md";
 import { Link } from "react-router-dom";
+import ProjectViewCard from "./ProjectViewCard";
 
 interface projectDetails {
+  _id: string;
   projectTitle: string;
   projectDescription: string;
   approvalStatus: string;
@@ -26,6 +26,7 @@ const Projects = () => {
   // project details state
   const [projectDetails, setProjectsDetails] = useState<projectDetails[]>([
     {
+      _id: "",
       projectTitle: "Loading...",
       approvalStatus: "",
       projectDescription: "",
@@ -40,7 +41,7 @@ const Projects = () => {
   const getProjectData = async () => {
     try {
       const response = await axiosInst.get<ApiResponse<projectDetails[]>>(
-        "/user/get-first-project",
+        "/user/get-all-projects",
         {
           headers: {
             "Content-Type": "application/json",
@@ -53,6 +54,7 @@ const Projects = () => {
       let responseDataArray: projectDetails[] = [];
       response.data.data.forEach((ele) => {
         responseDataArray.push({
+          _id: ele._id,
           projectTitle: ele.projectTitle,
           projectDescription: ele.projectDescription,
           approvalStatus: ele.approvalStatus,
@@ -76,22 +78,23 @@ const Projects = () => {
   return (
     <>
       {/* main page */}
-      <div className="h-auto w-[100%] box-border relative pb-16">
+      <div className="h-auto w-[100%] box-border  pb-16 ">
         {/*  button to add new project*/}
         <Link
           to="/register-project"
-          className="absolute bottom-0 right-10 text-4xl text-slate-100 bg-[#3c6e71] p-2 rounded-md shadow-[2px_2px_2px_rgba(210,210,210,1)] hover:scale-110 hover:text-slate-400 hover:bg-[#3b6a6d] cursor-pointer transition-all z-50"
+          className="absolute bottom-2 right-6 text-4xl text-slate-100 bg-[#3c6e71] p-2 rounded-md shadow-[2px_2px_2px_rgba(210,210,210,1)] hover:scale-110 hover:text-slate-400 hover:bg-[#3b6a6d] cursor-pointer transition-all z-50"
         >
           {/* <MdLibraryAdd /> */}
           <MdOutlineAddComment />
         </Link>
 
         {!state.isProjectRegistered && (
-          <div className=" flex flex-wrap gap-2 justify-center items-center box-border w-[100%] mt-16 ">
+          <div className=" w-full flex flex-wrap justify-center gap-2 box-border mt-16 pt-2 ">
             {projectDetails.map((ele, index) => {
               // return <div key={index + "uniqueKety"}>{ele.projectTitle}</div>;
               return (
-                <ProjectView
+                <ProjectViewCard
+                  _id={ele._id}
                   role={state.role}
                   key={index + "uniqueKety"}
                   projectTitle={ele.projectTitle}
@@ -101,6 +104,7 @@ const Projects = () => {
                   userName={ele.createdBy.name}
                   userClass={ele.createdBy?.userClass || "test"}
                   userSec={ele.createdBy?.userSec || "T"}
+                  onSuccess={() => getProjectData()}
                 />
               );
             })}{" "}

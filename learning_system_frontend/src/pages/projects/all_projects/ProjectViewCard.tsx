@@ -1,11 +1,14 @@
-// import sideImg from "../assets/23810.jpg";
-import sideImg from "../assets/project4.jpg";
-import { FiEdit } from "react-icons/fi";
-import { MdDelete } from "react-icons/md";
+import sideImg from "../../../assets/project4.jpg";
 import { IoEye } from "react-icons/io5";
 import { Link } from "react-router-dom";
+import { FaRegCheckCircle } from "react-icons/fa";
+import { FaRegTimesCircle } from "react-icons/fa";
+import { toast } from "react-toastify";
+import axios from "axios";
+import axiosInst from "../../../api/AxiosInst";
 
 interface projectViewProps_int {
+  _id: string;
   key?: string;
   projectTitle: string;
   approvalStatus: string;
@@ -15,9 +18,11 @@ interface projectViewProps_int {
   userName: string;
   projectDescription: string;
   role: string;
+  onSuccess: () => void;
 }
 
-const ProjectView: React.FC<projectViewProps_int> = ({
+const ProjectViewCard: React.FC<projectViewProps_int> = ({
+  _id,
   projectTitle,
   projectDescription,
   approvalStatus,
@@ -26,46 +31,79 @@ const ProjectView: React.FC<projectViewProps_int> = ({
   userClass,
   userSec,
   role,
+  onSuccess,
 }) => {
   console.log("Role is :- ", role);
-  return (
-    <div className="w-[94%] mx-auto md:w-[80%] lg:w-[500px] xl:w-[500px] md:h-[200px] box-border h-auto relative">
-      {/* background */}
-      {/* <div className="absolute -bottom-0 right-0 text-9xl opacity-20 text-slate-400 z-10 -rotate-45">
-        <AiOutlineBarChart />
-      </div> */}
-      {/* edit button */}
 
+  // update project status
+  const updateProjectStatus = async (status: string) => {
+    console.log("Update the status :-");
+    console.log("Project id is:-", _id);
+    console.log("Status is :- ", status);
+
+    try {
+      const response = await axiosInst.patch(
+        `/user/approve-as-success/${_id}`,
+        {
+          approvalStatus: status,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        }
+      );
+
+      console.log("Response is:- ", response);
+      // function to refatch project data
+      onSuccess();
+      toast.success(response?.data.message || "Successfully updated");
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(
+          error.response?.data?.message ||
+            "Internal server error (updating project status)"
+        );
+      }
+      console.log(error);
+    }
+  };
+  return (
+    <div className="w-[94%] mt-2 md:w-[80%] lg:w-[500px] xl:w-[400px] md:h-[200px] box-border h-auto relative">
+      {/* edit button */}
       <div className="absolute top-1 right-[8px] text-xl flex flex-col items-center gap-1 z-50 text-slate-300 ">
         <Link
-          to=""
-          className="  text-[20px] hover:scale-105 transition-all text-md cursor-pointer hover:text-yellow-700 text-yellow-600"
+          to={`/project/view/${_id}`}
+          className="  text-[21px] hover:scale-105 transition-all text-md cursor-pointer hover:text-yellow-700 text-yellow-600"
         >
           <IoEye />
         </Link>
-        {role === "admin" && (
-          <div className="text-[17px]  hover:scale-105 transition-all hover:text-green-800 text-green-700    text-md cursor-pointer">
+        {/* project approval success button */}
+        {role === "admin" && approvalStatus == "pending" && (
+          <div
+            className="text-[19px]  hover:scale-105 transition-all hover:text-green-800 text-green-700    text-md cursor-pointer"
+            onClick={() => updateProjectStatus("success")}
+          >
             {/* <MdEdit /> */}
-            <FiEdit />
+            {/* <button> */}
+            <FaRegCheckCircle />
+            {/* </button> */}
           </div>
         )}
-        {role === "admin" && (
-          <div className=" text-[20px] hover:scale-105 transition-allfont-bold   cursor-pointer pt-1 hover:text-red-800 text-red-700">
-            <MdDelete />
+        {role === "admin" && approvalStatus == "pending" && (
+          <div
+            className=" text-[19px] hover:scale-105 transition-allfont-bold   cursor-pointer pt-1 hover:text-red-800 text-red-700"
+            onClick={() => updateProjectStatus("rejected")}
+          >
+            <FaRegTimesCircle />
           </div>
         )}
       </div>
 
       {/* card container */}
       <div className="flex flex-col  md:flex bg-white border border-gray-200 rounded-lg shadow md:flex-row  w-full h-full  dark:border-gray-700 dark:bg-gray-800  relative">
-        {/* view button */}
-        {/* <Link
-          to=""
-          className="absolute top-2 right-2 text-slate-300 text-2xl hover:text-slate-100 hover:scale-105 transition-all"
-        >
-          <IoEye />
-        </Link> */}
-        {/* status button */}
+        {/* status text */}
         <div
           className="absolute flex justify-center items-center h-[30px] w-[90px]  md:bottom-0 md:left-0 rounded-bl-md rounded-tr-md"
           style={{
@@ -129,6 +167,6 @@ const ProjectView: React.FC<projectViewProps_int> = ({
   );
 };
 
-export default ProjectView;
+export default ProjectViewCard;
 
 <></>;

@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import ProjectRegForm from "./ProjectRegForm";
 import UserContext from "../../context/user_context/UserContext";
-import ProjectView from "../../components/ProjectView";
+import ProjectView from "../../components/ProjectViewOther";
 import axiosInst from "../../api/AxiosInst";
 import { ApiResponse } from "../../api/ApiResponses";
 
@@ -30,7 +30,7 @@ const Home = () => {
     console.log("get project details triggered....");
     try {
       const response = await axiosInst.get<ApiResponse<projectDetails[]>>(
-        "/user/get-first-project",
+        "/user/get-all-projects",
         {
           headers: {
             "Content-Type": "application/json",
