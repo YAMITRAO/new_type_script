@@ -41,6 +41,17 @@ const ProjectViewCard: React.FC<projectViewProps_int> = ({
     console.log("Project id is:-", _id);
     console.log("Status is :- ", status);
 
+    let confirmation = false;
+    if (status === "success") {
+      confirmation = confirm("Are you sure you want to 'CONFIRM' the project?");
+    } else if (status === "rejected") {
+      confirmation = confirm("Are you sure you want to 'REJECT' the project?");
+    }
+
+    if (!confirmation) {
+      return;
+    }
+
     try {
       const response = await axiosInst.patch(
         `/user/approve-as-success/${_id}`,
@@ -80,7 +91,7 @@ const ProjectViewCard: React.FC<projectViewProps_int> = ({
           <IoEye />
         </Link>
         {/* project approval success button */}
-        {role === "admin" && approvalStatus == "pending" && (
+        {role === "admin" && approvalStatus === "pending" && (
           <div
             className="text-[19px]  hover:scale-105 transition-all hover:text-green-800 text-green-700    text-md cursor-pointer"
             onClick={() => updateProjectStatus("success")}
@@ -91,7 +102,7 @@ const ProjectViewCard: React.FC<projectViewProps_int> = ({
             {/* </button> */}
           </div>
         )}
-        {role === "admin" && approvalStatus == "pending" && (
+        {role === "admin" && approvalStatus === "pending" && (
           <div
             className=" text-[19px] hover:scale-105 transition-allfont-bold   cursor-pointer pt-1 hover:text-red-800 text-red-700"
             onClick={() => updateProjectStatus("rejected")}
@@ -105,7 +116,7 @@ const ProjectViewCard: React.FC<projectViewProps_int> = ({
       <div className="flex flex-col  md:flex bg-white border border-gray-200 rounded-lg shadow md:flex-row  w-full h-full  dark:border-gray-700 dark:bg-gray-800  relative">
         {/* status text */}
         <div
-          className="absolute flex justify-center items-center h-[30px] w-[90px]  md:bottom-0 md:left-0 rounded-bl-md rounded-tr-md"
+          className="absolute flex justify-center items-center h-[30px] w-[90px]  md:bottom-0 md:left-0 md:rounded-bl-md md:rounded-tr-md rounded-tl-md rounded-br-md md:rounded-tl-none md:rounded-br-none"
           style={{
             background:
               approvalStatus === "pending"

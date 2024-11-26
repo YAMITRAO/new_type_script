@@ -107,14 +107,14 @@ const SideBar = () => {
               )}
               {/* teams (both users) */}
               <NavLink
-                to="/teams"
+                to="/invitations"
                 className="flex items-center w-full h-fit p-1 px-3  rounded hover:bg-gray-700 hover:text-gray-300"
               >
                 <span className="text-2xl">
                   {" "}
                   <PiMicrosoftTeamsLogoDuotone />
                 </span>
-                <span className="ml-2 text-sm font-medium">Teams</span>
+                <span className="ml-2 text-sm font-medium">Invitations</span>
               </NavLink>
               {/* projects (both user) */}
               <NavLink
@@ -273,7 +273,7 @@ const SideBar = () => {
 
               {/* teams */}
               <NavLink
-                to="/teams"
+                to="/invitations"
                 className="flex items-center justify-center w-10 h-10 text-gray-200 bg-gray-700 rounded hover:text-gray-800 hover:bg-gray-200 transition-all"
               >
                 <span className="text-3xl">

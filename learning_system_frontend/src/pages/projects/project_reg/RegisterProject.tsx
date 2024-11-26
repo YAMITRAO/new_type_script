@@ -144,6 +144,7 @@ const RegisterProject = () => {
 
       invitation: {
         ownerInvitation: {
+          invitedUserName: state.name,
           invitationMail: state.email,
           invitationStatus: "accepted",
           invitationAcceptedAt: new Date(),

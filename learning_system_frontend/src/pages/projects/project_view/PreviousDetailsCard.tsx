@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { projectDetails_int } from "./ProjectView";
 import { IoAddCircle } from "react-icons/io5";
 import { toast } from "react-toastify";
@@ -8,6 +8,7 @@ import { LuFolderEdit } from "react-icons/lu";
 import { MdDelete } from "react-icons/md";
 import { IoCheckmarkCircleOutline } from "react-icons/io5";
 import { RxCrossCircled } from "react-icons/rx";
+import UserContext from "../../../context/user_context/UserContext";
 
 interface projectDetails {
   projectData: projectDetails_int | undefined;
@@ -17,6 +18,8 @@ const PreviousDetailsCard: React.FC<projectDetails> = ({
   projectData,
   onSuccess,
 }) => {
+  const { state } = useContext(UserContext);
+
   const [isEdit, setIsEdit] = useState(false);
   const [projectDetails, setProjectDetails] = useState<projectDetails_int>();
   const [projectRequirements, setProjectRequirements] =
@@ -80,13 +83,16 @@ const PreviousDetailsCard: React.FC<projectDetails> = ({
     let confirmation = false;
     if (status === "success") {
       confirmation = confirm("Are you sure you want to 'CONFIRM' the project?");
+      if (!confirmation) {
+        // toast("not allowd to update");
+        return;
+      }
     } else if (status === "rejected") {
-      confirmation = confirm("Are you sure you want to 'REJECT' the project?");
-    }
-
-    if (!confirmation) {
-      toast("not allowd to update");
-      return;
+      let test = prompt("Enter 'Confirm ' to update the status");
+      if (test !== "Confirm") {
+        toast.error("Confirmation failed!!!");
+        return;
+      }
     }
 
     try {
@@ -362,79 +368,81 @@ const PreviousDetailsCard: React.FC<projectDetails> = ({
               </div>
 
               {/* different operational buttons */}
-              <div className="w-full text-center mt-6">
-                {isEdit && projectDetails.approvalStatus !== "rejected" ? (
-                  // cancel button
-                  <div className="w-full flex gap-2">
-                    <div
-                      className="w-full  rounded text-center text-gray-200 bg-yellow-800  hover:bg-yellow-900 px-2 py-1 cursor-pointer text-xl transition-all"
-                      onClick={() => setIsEdit(false)}
-                    >
-                      Cancel
+              {state.role === "admin" && (
+                <div className="w-full text-center mt-6">
+                  {isEdit && projectDetails.approvalStatus !== "rejected" ? (
+                    // cancel button
+                    <div className="w-full flex gap-2">
+                      <div
+                        className="w-full  rounded text-center text-gray-200 bg-yellow-800  hover:bg-yellow-900 px-2 py-1 cursor-pointer text-xl transition-all"
+                        onClick={() => setIsEdit(false)}
+                      >
+                        Cancel
+                      </div>
+                      {/* submit button */}
+                      <button
+                        className="w-full  rounded text-center bg-green-800 text-gray-200 hover:bg-green-900 px-2 py-1 text-xl transition-all"
+                        type="submit"
+                      >
+                        Submit
+                      </button>
                     </div>
-                    {/* submit button */}
-                    <button
-                      className="w-full  rounded text-center bg-green-800 text-gray-200 hover:bg-green-900 px-2 py-1 text-xl transition-all"
-                      type="submit"
-                    >
-                      Submit
-                    </button>
-                  </div>
-                ) : (
-                  projectDetails.approvalStatus !== "rejected" && (
-                    <div
-                      className="rounded  px-2 py-1 text-xl   transition-all flex justify-between items-center text-slate-200 "
-                      // onClick={() => setIsEdit(true)}
-                    >
-                      {/* buttons to approve or reject */}
-                      <div className="w-fit">
-                        {projectDetails.approvalStatus === "pending" && (
-                          <div className="w-fit flex gap-1 text-3xl">
-                            {/* approve button */}
-                            <span
-                              title="approve"
-                              className="cursor-pointer text-green-700 hover:scale-110 hover:text-green-800 transition-all"
-                              onClick={() => updateProjectStatus("success")}
-                            >
-                              <IoCheckmarkCircleOutline />
-                            </span>
+                  ) : (
+                    projectDetails.approvalStatus !== "rejected" && (
+                      <div
+                        className="rounded  px-2 py-1 text-xl   transition-all flex justify-between items-center text-slate-200 "
+                        // onClick={() => setIsEdit(true)}
+                      >
+                        {/* buttons to approve or reject */}
+                        <div className="w-fit">
+                          {projectDetails.approvalStatus === "pending" && (
+                            <div className="w-fit flex gap-1 text-3xl">
+                              {/* approve button */}
+                              <span
+                                title="approve"
+                                className="cursor-pointer text-green-700 hover:scale-110 hover:text-green-800 transition-all"
+                                onClick={() => updateProjectStatus("success")}
+                              >
+                                <IoCheckmarkCircleOutline />
+                              </span>
 
-                            {/* reject button */}
+                              {/* reject button */}
+                              <span
+                                title="reject"
+                                className="text-[28px] cursor-pointer text-red-700 hover:scale-110 hover:text-red-800 transition-all "
+                                onClick={() => updateProjectStatus("rejected")}
+                              >
+                                <RxCrossCircled />{" "}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        {/* button to edit and delete project */}
+                        <div className="w-fit flex gap-1 text-2xl items-center gap-2">
+                          {/* edit button  */}
+                          <span
+                            className=" cursor-pointer text-yellow-700 hover:scale-110 hover:text-yellow-800 transition-all"
+                            title="edit"
+                            onClick={() => setIsEdit(true)}
+                          >
+                            <LuFolderEdit />
+                          </span>
+
+                          {projectDetails.approvalStatus == "success" && (
                             <span
                               title="reject"
-                              className="text-[28px] cursor-pointer text-red-700 hover:scale-110 hover:text-red-800 transition-all "
+                              className="text-[27px] cursor-pointer text-red-700 hover:scale-110 hover:text-red-800 transition-all "
                               onClick={() => updateProjectStatus("rejected")}
                             >
                               <RxCrossCircled />{" "}
                             </span>
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
-                      {/* button to edit and delete project */}
-                      <div className="w-fit flex gap-1 text-2xl items-center gap-2">
-                        {/* edit button  */}
-                        <span
-                          className=" cursor-pointer text-yellow-700 hover:scale-110 hover:text-yellow-800 transition-all"
-                          title="edit"
-                          onClick={() => setIsEdit(true)}
-                        >
-                          <LuFolderEdit />
-                        </span>
-
-                        {projectDetails.approvalStatus == "success" && (
-                          <span
-                            title="reject"
-                            className="text-[27px] cursor-pointer text-red-700 hover:scale-110 hover:text-red-800 transition-all "
-                            onClick={() => updateProjectStatus("rejected")}
-                          >
-                            <RxCrossCircled />{" "}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  )
-                )}
-              </div>
+                    )
+                  )}
+                </div>
+              )}
             </form>
           </div>
         </>

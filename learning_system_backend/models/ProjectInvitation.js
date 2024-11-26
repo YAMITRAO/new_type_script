@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const invitationSchema = new mongoose.Schema(
   {
+    invitedUserName: { type: String, default: null },
     invitationMail: { type: String, required: true, default: null },
     invitationStatus: { type: String, default: "pending" }, // pending, accepted, rejected
     invitationAcceptedAt: { type: Date, default: null },
@@ -13,12 +14,12 @@ const projectInvitationSchema = new mongoose.Schema(
   {
     createdBy: {
       type: mongoose.Schema.Types.ObjectId, //created by user (project creator)
-      ref: "UserModel",
+      ref: "Users",
       required: true,
     },
     projectRefrence: {
       type: mongoose.Schema.Types.ObjectId, //project that has these requirement
-      ref: "ProjectModel",
+      ref: "Projects",
     },
     invitedUsers: {
       type: Map,

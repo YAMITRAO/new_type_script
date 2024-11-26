@@ -15,6 +15,10 @@ const {
   userGetAllProjectController,
   editProjectDetailsController,
   findSearchedMailForInvitationController,
+  inviteUserController,
+  getProjectsInvitationController,
+  updateProjectInvitationStatusController,
+  userGetInvitedProjectController,
 } = require("../controller/User");
 const Auth = require("../middleware/Auth");
 
@@ -49,12 +53,29 @@ userRouter.post(
   Auth,
   findSearchedMailForInvitationController
 );
+// invite user for project collab
+userRouter.post("/invite-user", Auth, inviteUserController);
+// get invited projects
+userRouter.get(
+  "/get-projects-invitation",
+  Auth,
+  getProjectsInvitationController
+);
+// update project invitation status
+userRouter.patch(
+  "/update-invitation-status",
+  Auth,
+  updateProjectInvitationStatusController
+);
 
 // add_project
 userRouter.post("/add-project", Auth, userAddProjectController);
 
 // get all project data
 userRouter.get("/get-all-projects", Auth, userGetAllProjectController);
+
+// get invited projects
+userRouter.get("/get-invited-projects", Auth, userGetInvitedProjectController);
 // get single project data
 userRouter.get(
   "/get-single-project/:projectId",

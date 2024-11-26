@@ -358,9 +358,12 @@ const editUserController = async (req, res) => {
 
 // find searched mail for invitation
 const findSearchedMailForInvitationController = async (req, res) => {
-  console.log(req.body.email);
+  // console.log(req.body.email);
   try {
     let searchedMail = req?.body?.email;
+    if (searchedMail.toLowerCase() === req?.userMail.toLowerCase()) {
+      throw new Error("You can't invite yourself");
+    }
     const findUser = await UserModel.findOne({ email: searchedMail });
     console.log("User value is ", findUser);
     if (!findUser) {
@@ -368,7 +371,140 @@ const findSearchedMailForInvitationController = async (req, res) => {
     }
     res.status(200).json({
       message: "Email found",
-      data: { searchedMail: searchedMail, searchstatus: "Founded" },
+      data: {
+        name: findUser.name,
+        searchedMail: searchedMail,
+        searchstatus: "Founded",
+      },
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: error && error.message,
+    });
+  }
+};
+
+// invite user for project collab
+const inviteUserController = async (req, res) => {
+  try {
+    const projectId = req?.body?.projectId;
+    const searchedMail = req?.body?.email;
+    const searchedUser = req?.body?.userName;
+    const invitationDocId = req?.body?.invitationDocId;
+
+    console.log("Project id is:-", projectId);
+    console.log("searched mail is:-", searchedMail);
+    console.log("Invitation doc id", invitationDocId);
+
+    // check is mail exist in db
+
+    if (searchedMail.toLowerCase() === req?.userMail.toLowerCase()) {
+      throw new Error("You can't invite yourself");
+    }
+    const findUser = await UserModel.findOne({ email: searchedMail });
+    console.log("User value is ", findUser);
+    if (!findUser) {
+      throw new Error("Email not found");
+    }
+
+    // let count invitation
+    const projectInvitation = await ProjectInvitationModel.findOne({
+      projectRefrence: projectId,
+    });
+
+    const invitedUsersCount = projectInvitation.invitedUsers.size;
+    console.log("Total invited users are :-", invitedUsersCount);
+    if (invitedUsersCount >= 4) {
+      throw new Error("Maximum 4 users can be invited");
+    }
+
+    // extrac the id before @
+    let username = searchedMail.split("@")[0];
+
+    // check for reinvitation
+
+    const checkInvitation = await ProjectInvitationModel.find({
+      _id: invitationDocId,
+      [`invitedUsers.${username}.invitationMail`]: searchedMail,
+    });
+
+    if (checkInvitation.length) {
+      throw new Error("Already invited");
+    }
+    // find project
+    await ProjectInvitationModel.findOneAndUpdate(
+      { projectRefrence: projectId },
+      {
+        $set: {
+          [`invitedUsers.${username}`]: {
+            invitationMail: searchedMail,
+            invitedUserName: searchedUser,
+          },
+        },
+      }
+    );
+
+    // count douments
+
+    res.json({
+      message: "Invitation sent successfully",
+      data: {},
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: error && error.message,
+    });
+  }
+};
+
+// get project invitation
+const getProjectsInvitationController = async (req, res) => {
+  try {
+    // serach invitation for which user
+    const userMail = req?.userMail;
+    console.log("Get invitation for", userMail);
+
+    let username = userMail.split("@")[0];
+    const checkInvitation = await ProjectInvitationModel.find({
+      [`invitedUsers.${username}.invitationMail`]: userMail,
+      [`invitedUsers.${username}.invitationStatus`]: "pending",
+    })
+      .populate("createdBy", "name email userClass userSec")
+      .populate("projectRefrence", "projectTitle");
+
+    console.log("Get invitation for", checkInvitation);
+    res.json({
+      message: "You have same invitations here",
+      data: checkInvitation,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: error && error.message,
+    });
+  }
+};
+
+// update project invitation status
+const updateProjectInvitationStatusController = async (req, res) => {
+  try {
+    // USER MAIL ID
+    const userMail = req?.userMail;
+    const invitationDocId = req?.body?.invitationDocId;
+    const status = req?.body?.status.toLowerCase();
+
+    console.log("The data is as", userMail, invitationDocId, status);
+    let username = userMail.split("@")[0];
+
+    await ProjectInvitationModel.findOneAndUpdate(
+      { _id: invitationDocId },
+      {
+        $set: {
+          [`invitedUsers.${username}.invitationStatus`]: status,
+        },
+      }
+    );
+    res.json({
+      message: "Invitation Status updated successfully",
     });
   } catch (error) {
     res.status(400).json({
@@ -465,10 +601,11 @@ const userGetSingleProjectController = async (req, res) => {
         ? await ProjectModel.findOne({ _id: projectId })
             .populate("createdBy", "name email userClass userSec")
             .populate("projectRequirement", "requirementOnCreation")
-        : await ProjectModel.findOne({ _id: projectId }).populate(
-            "createdBy",
-            "name email userClass userSec"
-          );
+            .populate("projectInvitations", "invitedUsers")
+        : await ProjectModel.findOne({ _id: projectId })
+            .populate("createdBy", "name email userClass userSec")
+            .populate("projectRequirement", "requirementOnCreation")
+            .populate("projectInvitations", "invitedUsers");
     // if (!project.length) {
     //   throw new Error("Project not found");
     // }
@@ -500,10 +637,10 @@ const userGetAllProjectController = async (req, res) => {
 
     // find project related to user
     // let project = await ProjectModel.find({ owner: userId });
-    console.log(
-      "Role of the user is :=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-",
-      user.role
-    );
+    // console.log(
+    //   "Role of the user is :=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-",
+    //   user.role
+    // );
     let project =
       user.role == "admin"
         ? await ProjectModel.find({}).populate(
@@ -526,6 +663,45 @@ const userGetAllProjectController = async (req, res) => {
     res.status(400).json({
       message: error && error.message,
     });
+  }
+};
+
+// get invited project
+const userGetInvitedProjectController = async (req, res) => {
+  try {
+    const userMail = req?.userMail;
+    console.log("Get project for", userMail);
+
+    // block admin to get project agian because in allproject admin have access of all projects?
+
+    // commenting because now admin can also get project invitation after blocking it we open it
+
+    // const user = await UserModel.findOne({ email: userMail });
+    // if (user.role === "admin") {
+    //   throw new Error(
+    //     "Admin can't get project, because they are just the copy"
+    //   );
+    // }
+
+    let username = userMail.split("@")[0];
+    const getInvitedProjects = await ProjectInvitationModel.find({
+      [`invitedUsers.${username}.invitationMail`]: userMail,
+      [`invitedUsers.${username}.invitationStatus`]: "accepted",
+    })
+      .populate("createdBy", "name email userClass userSec")
+      .populate(
+        "projectRefrence",
+        "projectTitle projectDescription approvalStatus"
+      );
+
+    console.log("Get invitation for", getInvitedProjects);
+
+    res.json({
+      message: "Invited project found",
+      data: getInvitedProjects,
+    });
+  } catch (error) {
+    res.status(400).json({ message: error && error.message });
   }
 };
 
@@ -620,8 +796,12 @@ module.exports = {
   userAddProjectController,
   userGetController,
   findSearchedMailForInvitationController,
+  inviteUserController,
+  getProjectsInvitationController,
+  updateProjectInvitationStatusController,
   userGetSingleProjectController,
   userGetAllProjectController,
+  userGetInvitedProjectController,
   getAllUsersController,
   deleteUserController,
   blockUserController,

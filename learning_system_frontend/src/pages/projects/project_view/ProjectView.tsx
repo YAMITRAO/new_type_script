@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import PreviousDetailsCard from "./PreviousDetailsCard";
 import axiosInst from "../../../api/AxiosInst";
 import { ApiResponse } from "../../../api/ApiResponses";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
-import Invitationcard from "./Invitationcard";
+import ProjectInvitationCard from "./ProjectInvitationCard";
+import UserContext from "../../../context/user_context/UserContext";
 
 export interface projectDetails_int {
   _id: string;
@@ -23,9 +24,14 @@ export interface projectDetails_int {
   projectRequirement?: {
     requirementOnCreation: {};
   };
+  projectInvitations: {
+    _id: string;
+    invitedUsers: {}; // objects of invited users
+  };
 }
 
 const ProjectView = () => {
+  const { state } = useContext(UserContext);
   const params = useParams();
   const projectId = params.projectId;
 
@@ -63,14 +69,22 @@ const ProjectView = () => {
         {/* project details and related buttons  */}
         <PreviousDetailsCard
           projectData={projectDetails}
-          onSuccess={getSingleProjectData}
+          onSuccess={() => getSingleProjectData()}
         />
       </div>
 
       {/* right side */}
       <div className="w-full flex justify-center ">
         {/* invitation card */}
-        <Invitationcard />
+        {projectDetails && projectDetails.approvalStatus === "success" && (
+          <ProjectInvitationCard
+            projectId={(projectDetails && projectDetails._id) || "none"}
+            email={projectDetails?.createdBy?.email || "none"}
+            invitedUsers={projectDetails?.projectInvitations.invitedUsers || {}}
+            invitationDocId={projectDetails?.projectInvitations._id}
+            onSuccess={() => getSingleProjectData()}
+          />
+        )}
       </div>
     </div>
   );
