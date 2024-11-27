@@ -16,6 +16,9 @@ import Projects from "./pages/projects/all_projects/Projects";
 import ProjectView from "./pages/projects/project_view/ProjectView";
 import Invitationcard from "./pages/projects/project_view/ProjectInvitationCard";
 import Invitations from "./pages/invitations/Invitations";
+import InventoryReg from "./pages/inventory/add_to_inventory/InventoryReg";
+import Inventory from "./pages/inventory/inventory_view/Inventory";
+import InventoryViewCard from "./pages/inventory/inventory_view/InventoryViewCard";
 
 function App() {
   const { state } = useContext(UserContext);
@@ -62,12 +65,20 @@ function App() {
           path: "invitations",
           element: state.isAuth ? <Invitations /> : <Login />,
         },
+        {
+          path: "/inventory",
+          element: state.isAuth ? <Inventory /> : <Login />,
+        },
+        {
+          path: "/add-to-inventory",
+          element: state.isAuth ? <InventoryReg /> : <Login />,
+        },
       ],
     },
     {
       path: "/test",
       // element: <Test />,
-      // element: <Invitationcard />,
+      // element: <InventoryViewCard />,
     },
   ]);
   return (

@@ -55,7 +55,7 @@ userRouter.post(
 );
 // invite user for project collab
 userRouter.post("/invite-user", Auth, inviteUserController);
-// get invited projects
+// get invited projects for approval and rejection
 userRouter.get(
   "/get-projects-invitation",
   Auth,

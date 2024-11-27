@@ -17,6 +17,10 @@ const RegisterProject = () => {
     `value0`,
   ]);
 
+  // resource count
+  const [resCountArr, setResCountArr] = useState<any>([]);
+  const [resourcesData, setResourcesData] = useState({});
+
   const [projectTitle, setProjectTitle] = useState("");
   const [projectDesc, setProjectDesc] = useState("");
 
@@ -86,7 +90,6 @@ const RegisterProject = () => {
   };
 
   // onchange handler for requirement
-
   function onChangehandlerReq(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
     setIsInputSame(false);
@@ -113,6 +116,36 @@ const RegisterProject = () => {
     setQuantity((prev) => {
       return { ...prev, [name]: value };
     });
+  };
+
+  // add resource field
+  const addResourceField = () => {
+    let arrLeng: number = resCountArr.length;
+    setResCountArr((prev: any) => [...prev, `resource${arrLeng}`]);
+  };
+  // delet resource field
+  const deleteResourceField = (e: React.MouseEvent<HTMLButtonElement>) => {
+    console.log("targeted value is", e.currentTarget.value);
+    let deletedValue = e.currentTarget.value;
+    let filteredArr = resCountArr.filter(
+      (val: any) => val !== e.currentTarget.value
+    );
+    setResCountArr(filteredArr);
+    //delete the resource field from requirement object
+    if (deletedValue) {
+      delete resourcesData[deletedValue];
+    }
+    console.log(resourcesData);
+  };
+
+  // resources on change handler
+  const onChangeResource = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    setResourcesData((prev) => {
+      return { ...prev, [name]: value };
+    });
+    console.log(resourcesData);
   };
 
   // submit data to related api
@@ -150,6 +183,7 @@ const RegisterProject = () => {
           invitationAcceptedAt: new Date(),
         },
       },
+      projectResources: resourcesData,
     };
 
     try {
@@ -208,7 +242,7 @@ const RegisterProject = () => {
           </div>
 
           {/* requirement */}
-          <div className="w-full flex flex-col gap-5 mb-10">
+          <div className="w-full flex flex-col gap-5 mb-5">
             {/* requirement button and heading */}
             <div className="flex gap-2 items-center w-full">
               <h2 className="text-gray-500 font-medium text-lg">
@@ -277,6 +311,47 @@ const RegisterProject = () => {
                     className="w-fit text-gray-400 text-2xl hover:text-red-700 transition-all cursor-pointer "
                     value={val}
                     onClick={deleteRequirementFields}
+                  >
+                    <MdDelete />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* add resources */}
+          <div className="w-full flex flex-col gap-5 mb-4">
+            {/* resource heading and button */}
+            <div className="flex gap-2 items-center w-full">
+              <h2 className="text-gray-500 font-medium text-lg">Resources</h2>
+              <button
+                type="button"
+                className="text-2xl mt-1 text-gray-400 bg-gray-600 rounded-full hover:scale-100 hover:bg-gray-200 transition-all "
+                onClick={addResourceField}
+              >
+                <IoAddCircle />
+              </button>
+            </div>
+
+            {/* resource input container */}
+            <div className="flex gap-6 flex-wrap w-full justify-center">
+              {resCountArr.map((val: any) => (
+                <div className="w-full flex gap-4" key={val}>
+                  {/* resource input field */}
+                  <input
+                    type="text"
+                    name={val}
+                    className="pb-1 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark: text-gray-200 dark:border-gray-600 dark:focus:border-gray-400 focus:outline-none  focus:border-gray-800
+                placeholder-gray-600 indent-2 "
+                    placeholder="Resource link here ex. youtube, drive etc."
+                    required
+                    onChange={onChangeResource}
+                  />
+                  <button
+                    type="button"
+                    className="w-fit text-gray-400 text-2xl hover:text-red-700 transition-all cursor-pointer "
+                    value={val}
+                    onClick={deleteResourceField}
                   >
                     <MdDelete />
                   </button>

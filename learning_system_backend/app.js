@@ -25,6 +25,7 @@ app.use(bodyParser.json());
 
 // user url filter
 app.use("/user", require("./routes/User"));
+app.use("/inventory", require("./routes/Inventory"));
 
 mongoose
   .connect(process.env.MONGOEDB_CONNECTION_STRING)

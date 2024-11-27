@@ -531,6 +531,7 @@ const userAddProjectController = async (req, res) => {
       createdBy: user._id,
       projectTitle: req?.body.projectTitle,
       projectDescription: req?.body.projectDesc,
+      projectResources: req?.body?.projectResources,
     });
     await addProject.save();
     await user.save();

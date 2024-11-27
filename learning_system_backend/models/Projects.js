@@ -19,6 +19,10 @@ const projectSchema = new mongoose.Schema(
       type: String,
       default: "pending", // pending, accepted, rejected
     },
+    projectResources: {
+      type: {},
+      default: {},
+    },
     projectRequirement: {
       // different schema
       type: mongoose.Schema.Types.ObjectId,
