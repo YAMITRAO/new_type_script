@@ -2,11 +2,14 @@ import axios from "axios";
 import projectImg from "../../assets/project4.jpg";
 import { toast } from "react-toastify";
 import axiosInst from "../../api/AxiosInst";
+import { IoEye } from "react-icons/io5";
+import { Link } from "react-router-dom";
 
 interface InvitationCardProps_int {
   invitationDocId: string;
   creatorName: string;
   projectTitle: string;
+  projectId: string;
   onSuccess: () => void;
 }
 
@@ -14,6 +17,7 @@ const InvitationCard: React.FC<InvitationCardProps_int> = ({
   creatorName,
   projectTitle,
   invitationDocId,
+  projectId,
   onSuccess,
 }) => {
   console.log("Invitation doc id is:---", invitationDocId);
@@ -58,7 +62,14 @@ const InvitationCard: React.FC<InvitationCardProps_int> = ({
   };
   return (
     <div className="text-slate-300 w-fit">
-      <div className="p-4 w-[320px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+      <div className="p-4 w-[280px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 relative">
+        {/* view button */}
+        <Link
+          to={`/project/view/${projectId}`}
+          className="absolute top-2 right-2 text-2xl text-slate-400 w-fit hover:scale-110 hover:text-slate-200"
+        >
+          <IoEye />
+        </Link>
         {/* invitation details */}
         <div className="flex flex-col items-center">
           {/* project image */}
@@ -77,7 +88,7 @@ const InvitationCard: React.FC<InvitationCardProps_int> = ({
           </span>
 
           {/* buttons */}
-          <div className=" w-full flex gap-2 justify-around mt-4 md:mt-6">
+          <div className=" w-full flex gap-4 justify-center mt-4 md:mt-6">
             {/* accept invitation */}
             <button
               value={invitationDocId}

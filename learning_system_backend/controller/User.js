@@ -755,7 +755,8 @@ const editProjectDetailsController = async (req, res) => {
   try {
     const projectId = req?.params?.projectId;
     const adminMain = req?.userMail;
-    const { projectTitle, projectDescription } = req?.body;
+    const { projectTitle, projectDescription, projectResources, requirement } =
+      req?.body;
     console.log("admin mail id :- ", adminMain);
     console.log("project id ", projectId);
     console.log("Title and status is:-", projectTitle, projectDescription);
@@ -778,7 +779,15 @@ const editProjectDetailsController = async (req, res) => {
 
     editProject.projectTitle = projectTitle;
     editProject.projectDescription = projectDescription;
+    editProject.projectResources = projectResources;
     await editProject.save();
+
+    // change to the requirement folder
+    // const requirementFolder = await ProjectRequirementModel.find({
+    //   projectRefrence: editProject._id,
+    // });
+    // requirementFolder.requirementOnCreation = requirement;
+    // await requirementFolder.save();
 
     res.status(200).json({
       message: "Project edited successfully...",

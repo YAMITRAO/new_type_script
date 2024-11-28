@@ -15,9 +15,17 @@ const projectSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+
+    // step one: approval
     approvalStatus: {
       type: String,
       default: "pending", // pending, accepted, rejected
+    },
+
+    // step two: component selection
+    isComponentSelectionAllowed: {
+      type: Boolean,
+      default: false,
     },
     projectResources: {
       type: {},

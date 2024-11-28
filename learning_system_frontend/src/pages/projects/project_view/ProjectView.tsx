@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 import ProjectInvitationCard from "./ProjectInvitationCard";
 import UserContext from "../../../context/user_context/UserContext";
+import CartCard from "./CartCard";
 
 export interface projectDetails_int {
   _id: string;
@@ -24,6 +25,7 @@ export interface projectDetails_int {
   projectRequirement?: {
     requirementOnCreation: {};
   };
+  projectResources?: {};
   projectInvitations: {
     _id: string;
     invitedUsers: {}; // objects of invited users
@@ -31,7 +33,7 @@ export interface projectDetails_int {
 }
 
 const ProjectView = () => {
-  const { state } = useContext(UserContext);
+  // const { state } = useContext(UserContext);
   const params = useParams();
   const projectId = params.projectId;
 
@@ -75,6 +77,9 @@ const ProjectView = () => {
 
       {/* right side */}
       <div className="w-full flex justify-center ">
+        {/* select component card */}
+        <CartCard />
+
         {/* invitation card */}
         {projectDetails && projectDetails.approvalStatus === "success" && (
           <ProjectInvitationCard

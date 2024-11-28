@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import axiosInst from "../../../api/AxiosInst";
 import axios from "axios";
 import moment from "moment";
+import UserContext from "../../../context/user_context/UserContext";
 
 interface Invitationcard_int {
   projectId: string;
@@ -19,6 +20,7 @@ const ProjectInvitationCard: React.FC<Invitationcard_int> = ({
   invitationDocId,
   onSuccess,
 }) => {
+  const { state } = useContext(UserContext);
   const [enteredMail, setEnteredMail] = useState("");
   const [isFound, setIsFound] = useState(false);
   const [isLoading, setIsloading] = useState(false);
@@ -106,56 +108,58 @@ const ProjectInvitationCard: React.FC<Invitationcard_int> = ({
   return (
     <div className="mt-4  h-fit w-full  max-w-full min-w-[350px] rounded-md p-6 md:p-4  text-slate-300">
       {/* search user by mail id for invitation */}
-      <div className="w-full  flex">
-        {!isLoading && (
-          <input
-            type="text"
-            value={enteredMail}
-            className="w-full outline-none border-none rounded-l-md h-8 indent-2 text-slate-800 bg-slate-200"
-            placeholder="Enter email id "
-            onChange={(e) => setEnteredMail(e.target.value)}
-          />
-        )}
-        {/* search button */}
-        {!isFound ? (
-          !isLoading ? (
-            <button
-              className="w-fit py-1 px-2 bg-[#1679af] rounded-r-md hover:bg-[#07344c] hover:text-slate-100 transition-all border-none outline-none"
-              onClick={searchFindHandler}
-            >
-              Search
-            </button>
+      {(state.email === email || state.role === "admin") && (
+        <div className="w-full  flex">
+          {!isLoading && (
+            <input
+              type="text"
+              value={enteredMail}
+              className="w-full outline-none border-none rounded-l-md h-8 indent-2 text-slate-800 bg-slate-200"
+              placeholder="Enter email id "
+              onChange={(e) => setEnteredMail(e.target.value)}
+            />
+          )}
+          {/* search button */}
+          {!isFound ? (
+            !isLoading ? (
+              <button
+                className="w-fit py-1 px-2 bg-[#1679af] rounded-r-md hover:bg-[#07344c] hover:text-slate-100 transition-all border-none outline-none"
+                onClick={searchFindHandler}
+              >
+                Search
+              </button>
+            ) : (
+              <button
+                className="w-full py-1 px-2 bg-[#072d41] rounded-md transition-all border-none outline-none"
+                // onClick={searchFindHandler}
+              >
+                Searching...
+              </button>
+            )
           ) : (
-            <button
-              className="w-full py-1 px-2 bg-[#072d41] rounded-md transition-all border-none outline-none"
-              // onClick={searchFindHandler}
-            >
-              Searching...
-            </button>
-          )
-        ) : (
-          <>
-            {/* invite button */}
-            <button
-              className="w-fit py-1 px-2 bg-green-700 rounded-r-md hover:bg-green-800 hover:text-slate-100 transition-all border-none outline-none"
-              onClick={invitationSubmitHandler}
-            >
-              {" "}
-              Invite
-            </button>
-            <button
-              className="ml-2 w-fit py-1 px-2 bg-red-700 rounded-md hover:bg-red-800 hover:text-slate-100 transition-all border-none outline-none"
-              onClick={() => {
-                setIsFound(false);
-                setEnteredMail("");
-              }}
-            >
-              {" "}
-              Cancel
-            </button>
-          </>
-        )}
-      </div>
+            <>
+              {/* invite button */}
+              <button
+                className="w-fit py-1 px-2 bg-green-700 rounded-r-md hover:bg-green-800 hover:text-slate-100 transition-all border-none outline-none"
+                onClick={invitationSubmitHandler}
+              >
+                {" "}
+                Invite
+              </button>
+              <button
+                className="ml-2 w-fit py-1 px-2 bg-red-700 rounded-md hover:bg-red-800 hover:text-slate-100 transition-all border-none outline-none"
+                onClick={() => {
+                  setIsFound(false);
+                  setEnteredMail("");
+                }}
+              >
+                {" "}
+                Cancel
+              </button>
+            </>
+          )}
+        </div>
+      )}
 
       <table className="w-full mt-4">
         <thead className="w-full">
@@ -173,6 +177,7 @@ const ProjectInvitationCard: React.FC<Invitationcard_int> = ({
             // }
             return (
               <tr
+                key={val[1].invitationMail}
                 className="text-center odd:bg-slate-800 "
                 style={{
                   background: val[1].invitationMail === email ? "#431a00" : "",

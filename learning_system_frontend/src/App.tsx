@@ -19,6 +19,7 @@ import Invitations from "./pages/invitations/Invitations";
 import InventoryReg from "./pages/inventory/add_to_inventory/InventoryReg";
 import Inventory from "./pages/inventory/inventory_view/Inventory";
 import InventoryViewCard from "./pages/inventory/inventory_view/InventoryViewCard";
+import CartCard from "./pages/projects/project_view/CartCard";
 
 function App() {
   const { state } = useContext(UserContext);
@@ -71,13 +72,21 @@ function App() {
         },
         {
           path: "/add-to-inventory",
-          element: state.isAuth ? <InventoryReg /> : <Login />,
+          element: state.isAuth ? (
+            state.role === "admin" ? (
+              <InventoryReg />
+            ) : (
+              <div>Only Admin allowed</div>
+            )
+          ) : (
+            <Login />
+          ),
         },
       ],
     },
     {
       path: "/test",
-      // element: <Test />,
+      element: <CartCard />,
       // element: <InventoryViewCard />,
     },
   ]);

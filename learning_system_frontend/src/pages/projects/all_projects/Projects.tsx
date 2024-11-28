@@ -22,7 +22,12 @@ interface projectDetails {
   };
 }
 
-const Projects = () => {
+interface projects_int {
+  isUser?: boolean;
+  isAdmin?: boolean;
+}
+
+const Projects: React.FC<projects_int> = ({ isUser, isAdmin }) => {
   const { state, dispatch } = useContext(UserContext);
   // project details state
   const [projectDetails, setProjectsDetails] = useState<projectDetails[]>([
@@ -116,7 +121,7 @@ const Projects = () => {
   return (
     <>
       {/* main page */}
-      <div className="h-auto w-[100%] box-border  pb-16 ">
+      <div className="h-auto w-[100%] box-border  pb-4 ">
         {/*  button to add new project*/}
         <Link
           to="/register-project"
@@ -136,6 +141,12 @@ const Projects = () => {
             )}
             {projectDetails.map((ele, index) => {
               // return <div key={index + "uniqueKety"}>{ele.projectTitle}</div>;
+              if (isUser && ele.approvalStatus !== "success") {
+                return;
+              } else if (isAdmin && ele.approvalStatus !== "pending") {
+                return;
+              }
+
               return (
                 <ProjectViewCard
                   _id={ele._id}

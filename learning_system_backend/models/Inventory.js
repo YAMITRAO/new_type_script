@@ -14,6 +14,14 @@ const inventorySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    isAllowedToSelect: {
+      type: Boolean,
+      default: true,
+    },
+    isCostly: {
+      type: Boolean,
+      default: false,
+    },
     refrenceLink1: {
       type: String,
       default: "none",
@@ -33,6 +41,10 @@ const inventorySchema = new mongoose.Schema(
     componentDescription: {
       type: String,
       default: "none",
+    },
+    otherFieldsForFuture: {
+      type: Object,
+      default: {},
     },
   },
   { timestamps: true }

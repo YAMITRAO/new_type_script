@@ -19,7 +19,7 @@ const RegisterProject = () => {
 
   // resource count
   const [resCountArr, setResCountArr] = useState<any>([]);
-  const [resourcesData, setResourcesData] = useState({});
+  const [resourcesData, setResourcesData] = useState<Record<string, {}>>({});
 
   const [projectTitle, setProjectTitle] = useState("");
   const [projectDesc, setProjectDesc] = useState("");
@@ -54,6 +54,10 @@ const RegisterProject = () => {
   const deleteRequirementFields = (
     e: React.MouseEvent<HTMLButtonElement | HTMLTextAreaElement>
   ) => {
+    if (requirementCount.length <= 1) {
+      toast.error("At least one requirement field is required");
+      return;
+    }
     let deletedValue = e.currentTarget.value;
     let arr = requirementCount.filter((val) => val !== e.currentTarget.value);
     setRequirementCount(arr);
@@ -63,11 +67,8 @@ const RegisterProject = () => {
       console.log("deleted value is", requirement[deletedValue]);
 
       //  if deleted value is the last value then
+
       let arrOfRequirement = Object.values(requirement);
-      console.log(
-        "conflicted value is",
-        arrOfRequirement[arrOfRequirement.length - 1]
-      );
 
       if (
         arrOfRequirement[arrOfRequirement.length - 1] ===
@@ -141,7 +142,6 @@ const RegisterProject = () => {
   // resources on change handler
   const onChangeResource = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-
     setResourcesData((prev) => {
       return { ...prev, [name]: value };
     });
@@ -218,10 +218,14 @@ const RegisterProject = () => {
       <div className="w-full h-full  overflow-y-auto p-2 custom-scrollbar">
         {/* project registration project */}
         <form
-          className=" p-10 flex flex-col "
+          className=" p-10 pt-5 flex flex-col "
           autoComplete="off"
           onSubmit={handleSubmitToApi}
         >
+          {/* form title */}
+          <div className="w-full text-center text-2xl text-slate-200 font-medium font-mono mb-5">
+            Add New Project
+          </div>
           {/* project title  */}
           <div className="relative z-0 w-full mb-5 group flex flex-col-reverse">
             <input
@@ -320,7 +324,7 @@ const RegisterProject = () => {
           </div>
 
           {/* add resources */}
-          <div className="w-full flex flex-col gap-5 mb-4">
+          <div className="w-full flex flex-col gap-5 mb-3">
             {/* resource heading and button */}
             <div className="flex gap-2 items-center w-full">
               <h2 className="text-gray-500 font-medium text-lg">Resources</h2>
@@ -336,12 +340,12 @@ const RegisterProject = () => {
             {/* resource input container */}
             <div className="flex gap-6 flex-wrap w-full justify-center">
               {resCountArr.map((val: any) => (
-                <div className="w-full flex gap-4" key={val}>
+                <div className="w-full flex gap-2" key={val}>
                   {/* resource input field */}
                   <input
                     type="text"
                     name={val}
-                    className="pb-1 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark: text-gray-200 dark:border-gray-600 dark:focus:border-gray-400 focus:outline-none  focus:border-gray-800
+                    className="pb-1 mb-2 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark: text-gray-200 dark:border-gray-600 dark:focus:border-gray-400 focus:outline-none  focus:border-gray-800
                 placeholder-gray-600 indent-2 "
                     placeholder="Resource link here ex. youtube, drive etc."
                     required
@@ -363,7 +367,7 @@ const RegisterProject = () => {
           {/*project Description  */}
           <div className="w-full flex flex-col-reverse ">
             <textarea
-              rows={6}
+              rows={4}
               name="projectDescription"
               value={projectDesc}
               className="pb-1 pt-1 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark: text-gray-200 dark:border-gray-600 dark:focus:border-gray-400 focus:outline-none  focus:border-gray-800

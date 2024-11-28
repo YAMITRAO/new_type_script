@@ -9,6 +9,8 @@ const InventoryReg = () => {
     componentTitle: "",
     availableQuantity: "",
     allocatedQuantity: "",
+    isAllowedToSelect: true,
+    isCostly: false,
     refrenceLink1: "",
     refrenceLink2: "",
     approxAmount: "",
@@ -29,6 +31,7 @@ const InventoryReg = () => {
     setFormData((prev) => {
       return { ...prev, [name]: value };
     });
+    console.log("form data is", formData);
   };
 
   // image select handler
@@ -198,6 +201,55 @@ const InventoryReg = () => {
                 className="text-gray-500 font-medium text-md peer-focus:text-gray-300 "
               >
                 Allocated Quantity
+              </label>
+            </div>
+          </div>
+
+          {/* radio buttons */}
+          <div className="w-full flex gap-5 ">
+            {/* for isAllowed to select */}
+            <div className=" w-full mb-5 flex gap-2 items-center ">
+              <input
+                type="checkbox"
+                name="isAllowedToSelect"
+                checked={formData.isAllowedToSelect}
+                className="w-4 h-4 border-2 border-gray-300 rounded-md focus:outline-none checked:bg-blue-500 checked:border-blue-500 peer"
+                // required
+                onChange={(e) => {
+                  const { name, checked } = e.target;
+                  setFormData((prev) => {
+                    return { ...prev, [name]: checked };
+                  });
+                }}
+              />
+              <label
+                htmlFor="floating_title"
+                className="text-gray-500 font-medium text-md peer-checked:text-gray-300  "
+              >
+                isAllowedToSelect
+              </label>
+            </div>
+
+            {/* iscostly */}
+            <div className="w-full mb-5 flex gap-2 items-center">
+              <input
+                type="checkbox"
+                name="isCostly"
+                checked={formData.isCostly}
+                className="w-4 h-4 border-2 border-gray-300 rounded-md focus:outline-none checked:bg-blue-500 checked:border-blue-500 peer"
+                // required
+                onChange={(e) => {
+                  const { name, checked } = e.target;
+                  setFormData((prev) => {
+                    return { ...prev, [name]: checked };
+                  });
+                }}
+              />
+              <label
+                htmlFor="floating_title"
+                className="text-gray-500 font-medium text-md peer-checked:text-gray-300  "
+              >
+                IsCostly
               </label>
             </div>
           </div>
