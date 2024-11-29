@@ -140,12 +140,10 @@ const ProjectViewCard: React.FC<projectViewProps_int> = ({
           alt=""
         />
         {/* right side of card*/}
-        <div className="flex flex-col gap-2 w-full leading-normal  overflow-hidden pr-2 pl-4 pt-4 pb-2 ">
+        <div className="flex flex-col justify-start gap-2 w-full leading-normal  overflow-hidden pr-2 pl-4 pt-4 pb-2 ">
           {/* title */}
-          <h5 className=" text-xl font-bold tracking-tight text-gray-900 dark:text-slate-200">
-            <span className=" text-slate-500 text-nowrap truncate ">
-              Title:
-            </span>{" "}
+          <h5 className=" text-xl font-bold tracking-tight text-gray-900 dark:text-slate-200 text-ellipsis truncate pr-4">
+            <span className=" text-slate-500 text-nowrap  ">Title:</span>{" "}
             {projectTitle}
           </h5>
           {/* email */}

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { projectDetails_int } from "./ProjectView";
 import { IoAddCircle } from "react-icons/io5";
 import { toast } from "react-toastify";
@@ -8,6 +8,7 @@ import { LuFolderEdit } from "react-icons/lu";
 import { IoCheckmarkCircleOutline } from "react-icons/io5";
 import { RxCrossCircled } from "react-icons/rx";
 import UserContext from "../../../context/user_context/UserContext";
+import { MdDelete } from "react-icons/md";
 
 interface projectDetails {
   projectData: projectDetails_int | undefined;
@@ -33,9 +34,9 @@ const PreviousDetailsCard: React.FC<projectDetails> = ({
     {}
   );
 
+  const [resourceArr, setResourceArr] = useState<[string, {}][]>([]);
+
   // to handle the requirement
-  const qtyRef = useRef();
-  const reqRef = useRef();
   const [requirement, setRequirement] = useState<Record<string, string>>();
   const [quantity, setQuantity] = useState<Record<string, string>>();
 
@@ -58,11 +59,15 @@ const PreviousDetailsCard: React.FC<projectDetails> = ({
     });
   };
 
-  // useEffect(() => {
-  //   setQuantity((prev) => {
-  //     return { ...prev };
-  //   });
-  // }, [quantity]);
+  // resources handler
+
+  // const addResourceField = () => {};
+  const deleteResourceField = (deleteKey: string) => {
+    console.log("before delete ", editedResources);
+    console.log("delete resource field ", deleteKey);
+    delete editedResources[deleteKey];
+    setResourceArr(Object.entries(editedResources));
+  };
 
   // edit on change resources
   const onChangeResource = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,6 +77,51 @@ const PreviousDetailsCard: React.FC<projectDetails> = ({
       return { ...prev, [name]: value };
     });
     console.log(editedResources);
+  };
+
+  // user edit allowed function
+  const allowUserToEdit = async (allowedStatus: boolean) => {
+    let confirmation = false;
+    if (allowedStatus) {
+      confirmation = window.confirm(
+        "Are you sure you want to allow user to edit?"
+      );
+    } else {
+      confirmation = window.confirm(
+        "Are you sure you want to disallow user to edit?"
+      );
+    }
+    if (!confirmation) {
+      // toast.error("Not allowed to edit ");
+      return;
+    }
+
+    console.log("allowed status is,", allowedStatus);
+    try {
+      // to prevent fron undefined project data
+      if (!projectData) {
+        return;
+      }
+      await axiosInst.put(
+        `/user/project-edit-status-update/${projectData._id}`,
+        {
+          editStatus: allowedStatus,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        }
+      );
+      toast.success("User edit status updated");
+      onSuccess();
+    } catch (error) {
+      console.log(error);
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data.message);
+      }
+    }
   };
 
   // to edit form details(title, description)
@@ -205,6 +255,9 @@ const PreviousDetailsCard: React.FC<projectDetails> = ({
     // fill resources data
     if (projectData?.projectResources) {
       setEditedResources({ ...projectData?.projectResources });
+      setResourceArr(Object.entries(projectData?.projectResources));
+    }
+    if (projectData?.projectResources) {
     }
     // enter project details
     if (projectData) {
@@ -212,6 +265,9 @@ const PreviousDetailsCard: React.FC<projectDetails> = ({
       setEditedDescription(projectData?.projectDescription);
     }
   }, [projectData]);
+
+  console.log("edit resources is :-", editedResources);
+  console.log("Resource arr", resourceArr);
 
   return (
     <div className="w-full min-w-[350px]   flex-col justify-center items-center ml-1">
@@ -251,7 +307,26 @@ const PreviousDetailsCard: React.FC<projectDetails> = ({
           </div>
         </div>
 
-        <div className="w-full text-right">
+        <div className="w-full flex justify-between text-right">
+          {/* allowEdit button */}
+          {state.role === "admin" &&
+            (projectData?.isEditAllowed ? (
+              <button
+                className=" px-1 bg-[#781010] rounded-md hover:bg-[#450f0f] text-slate-300"
+                onClick={() => allowUserToEdit(false)}
+              >
+                EditBlock
+              </button>
+            ) : (
+              <button
+                className=" px-1 bg-green-700 rounded-md hover:bg-green-800 text-slate-300"
+                onClick={() => allowUserToEdit(true)}
+              >
+                EditAllow
+              </button>
+            ))}
+
+          {/* approval ststus */}
           <span
             style={{
               background:
@@ -412,91 +487,134 @@ const PreviousDetailsCard: React.FC<projectDetails> = ({
               </div>
 
               {/* resources */}
-              {projectDetails?.projectResources && (
-                <div className="w-full flex flex-col gap-5 mb-3">
-                  {/* resource heading and button */}
-                  <div className="flex gap-2 items-center w-full">
-                    <h2 className="text-gray-500 font-medium text-lg">
-                      Resources
-                    </h2>
+
+              <div className="w-full flex flex-col gap-5 mb-3">
+                {/* resource heading and button */}
+                <div className="flex gap-2 items-center w-full">
+                  <h2 className="text-gray-500 font-medium text-lg">
+                    Resources
+                  </h2>
+                  {!Object.entries(editedResources).length && isEdit && (
                     <button
                       type="button"
-                      className="text-2xl mt-1 text-gray-400 bg-gray-600 rounded-full cursor-not-allowed "
-                      // onClick={addResourceField}
+                      className="text-2xl mt-1 text-gray-400 bg-gray-600 rounded-full"
+                      onClick={() => {
+                        let field = `resources`;
+                        setEditedResources((prev) => ({
+                          ...prev,
+                          [field]: "",
+                        }));
+                        setResourceArr((prev) => [...prev, [field, ""]]);
+                      }}
                     >
                       <IoAddCircle />
                     </button>
-                  </div>
+                  )}
+                </div>
 
-                  {/* entries of resources */}
-                  <div className="flex gap-2 flex-wrap w-full justify-center">
-                    {projectDetails?.projectResources &&
-                      Object.entries(projectDetails?.projectResources).map(
-                        (val) => {
-                          return (
-                            <div className="w-full flex gap-1" key={val[0]}>
-                              {/* resource input field */}
-                              {isEdit ? (
-                                <input
-                                  type="text"
-                                  name={val[0]}
-                                  value={`${editedResources[val[0]]}`}
-                                  className="p-1  w-full text-sm bg-transparent  border-2 border-gray-300 appearance-none dark: text-gray-200 dark:border-gray-600 dark:focus:border-gray-400 focus:outline-none  focus:border-gray-800
+                {/* entries of resources */}
+                <div className="flex gap-2 flex-wrap w-full justify-center">
+                  {resourceArr.map((val, index, arr) => {
+                    console.log("rendering offffff iiinnnpppuuuttttt");
+                    return (
+                      <div className="w-full flex gap-1" key={val[0]}>
+                        {/* resource input field */}
+                        {isEdit ? (
+                          <>
+                            <input
+                              type="text"
+                              name={val[0]}
+                              value={`${editedResources[val[0]]}`}
+                              className="p-1  w-full text-sm bg-transparent  border-2 border-gray-300 appearance-none dark: text-gray-200 dark:border-gray-600 dark:focus:border-gray-400 focus:outline-none  focus:border-gray-800
                 placeholder-gray-600 indent-2 rounded-md "
-                                  placeholder="Resource link here ex. youtube, drive etc."
-                                  required
-                                  disabled={!isEdit}
-                                  onChange={onChangeResource}
-                                />
-                              ) : (
-                                <div className="w-full flex gap-2 pb-1 bg-transparent   placeholder-gray-600 indent-2 text-slate-300 text-sm">
-                                  {/* resource title */}
-                                  <div className=" w-fit font-medium py-0 pr-2  text-md bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark: text-gray-300 dark:border-gray-600 outline-none indent-2 capitalize rounded-md">
-                                    {val[0]}
-                                  </div>
-                                  {/* link address */}
-                                  <div className=" px-1 text-ellipsis truncate  text-slate-500 py-0 pr-2 w-fit text-md bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:  dark:border-gray-600 outline-none indent-2 rounded-md">{`${val[1]}`}</div>
-                                  {/* resource link */}
-                                  <div className="w-fit py-0 pr-2  text-md bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark: text-gray-300 dark:border-gray-600 outline-none indent-2 capitalize rounded-md">
-                                    <a
-                                      href={`${
-                                        regex.test(`${val[1]}`)
-                                          ? val[1]
-                                          : "javascript:void(0);"
-                                      }`}
-                                      className="text-blue-500 font-medium"
-                                      target={`${
-                                        regex.test(`${val[1]}`) ? "_blank" : ""
-                                      }`}
-                                    >
-                                      {regex.test(`${val[1]}`) ? (
-                                        <span className=" hover:text-blue-700 transition-all">
-                                          Click to Open
-                                        </span>
-                                      ) : (
-                                        <span className="text-red-500 hover:text-red-700 transition-all">
-                                          Invalid Link
-                                        </span>
-                                      )}
-                                    </a>
-                                  </div>
-                                </div>
-                              )}
-                              {/* <button
+                              placeholder="Resource link here ex. youtube, drive etc."
+                              required
+                              disabled={!isEdit}
+                              onChange={onChangeResource}
+                            />
+
+                            {/*Add extra resources field button with last entry */}
+                            {arr.length - 1 == index && (
+                              <div>
+                                <button
+                                  type="button"
+                                  className="text-2xl mt-1 text-gray-400 bg-gray-600 rounded-full"
+                                  onClick={() => {
+                                    let field = `resources${index}`;
+                                    setEditedResources((prev) => ({
+                                      ...prev,
+                                      [field]: "",
+                                    }));
+                                    setResourceArr((prev) => [
+                                      ...prev,
+                                      [field, ""],
+                                    ]);
+                                  }}
+                                >
+                                  <IoAddCircle />
+                                </button>
+                              </div>
+                            )}
+                            {/* delete button with each resource field */}
+                            <button
                               type="button"
                               className="w-fit text-gray-400 text-2xl hover:text-red-700 transition-all cursor-pointer "
-                              // value={val}
-                              // onClick={deleteResourceField}
+                              value={val[0]}
+                              onClick={(e) => {
+                                const deleteKey = e.currentTarget.value;
+                                deleteResourceField(deleteKey);
+                                // console.log("Delete value is ", deleteKey);
+                                // if (editedResources) {
+                                //   console.log("Deleteddddd");
+                                //   let resources = editedResources;
+                                //   console.log("respourcse is ", resources);
+                                //   delete editedResources[deleteKey];
+                                //   console.log("after delete", resources);
+                                // }
+                              }}
                             >
                               <MdDelete />
-                            </button> */}
+                            </button>
+                          </>
+                        ) : (
+                          <div className="w-full flex gap-2 pb-1 bg-transparent   placeholder-gray-600 indent-2 text-slate-300 text-sm">
+                            {/* resource title */}
+                            <div className=" w-fit font-medium py-0 pr-2  text-md bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark: text-gray-300 dark:border-gray-600 outline-none indent-2 capitalize rounded-md">
+                              {val[0]}
                             </div>
-                          );
-                        }
-                      )}
-                  </div>
+                            {/* link address */}
+                            <div className=" px-1 text-ellipsis truncate  text-slate-500 py-0 pr-2 w-fit text-md bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:  dark:border-gray-600 outline-none indent-2 rounded-md">{`${val[1]}`}</div>
+                            {/* resource link */}
+                            <div className="w-fit py-0 pr-2  text-md bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark: text-gray-300 dark:border-gray-600 outline-none indent-2 capitalize rounded-md">
+                              <a
+                                href={`${
+                                  regex.test(`${val[1]}`)
+                                    ? val[1]
+                                    : "javascript:void(0);"
+                                }`}
+                                className="text-blue-500 font-medium"
+                                target={`${
+                                  regex.test(`${val[1]}`) ? "_blank" : ""
+                                }`}
+                              >
+                                {regex.test(`${val[1]}`) ? (
+                                  <span className=" hover:text-blue-700 transition-all">
+                                    Click to Open
+                                  </span>
+                                ) : (
+                                  <span className="text-red-500 hover:text-red-700 transition-all">
+                                    Invalid Link
+                                  </span>
+                                )}
+                              </a>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
-              )}
+              </div>
 
               {/*project Description  */}
               <div className="w-full flex flex-col-reverse ">
@@ -528,7 +646,7 @@ const PreviousDetailsCard: React.FC<projectDetails> = ({
               </div>
 
               {/* different operational buttons */}
-              {state.role === "admin" && (
+              {(state.role === "admin" || projectData?.isEditAllowed) && (
                 <div className="w-full text-center mt-6">
                   {isEdit && projectDetails.approvalStatus !== "rejected" ? (
                     // cancel button
@@ -553,31 +671,35 @@ const PreviousDetailsCard: React.FC<projectDetails> = ({
                         className="rounded  px-2 py-1 text-xl   transition-all flex justify-between items-center text-slate-200 "
                         // onClick={() => setIsEdit(true)}
                       >
-                        {/* buttons to approve or reject */}
-                        <div className="w-fit">
-                          {projectDetails.approvalStatus === "pending" && (
-                            <div className="w-fit flex gap-1 text-3xl">
-                              {/* approve button */}
-                              <span
-                                title="approve"
-                                className="cursor-pointer text-green-700 hover:scale-110 hover:text-green-800 transition-all"
-                                onClick={() => updateProjectStatus("success")}
-                              >
-                                <IoCheckmarkCircleOutline />
-                              </span>
+                        {/* buttons to approve or reject admin only allowed */}
+                        {state.role === "admin" && (
+                          <div className="w-fit">
+                            {projectDetails.approvalStatus === "pending" && (
+                              <div className="w-fit flex gap-1 text-3xl">
+                                {/* approve button */}
+                                <span
+                                  title="approve"
+                                  className="cursor-pointer text-green-700 hover:scale-110 hover:text-green-800 transition-all"
+                                  onClick={() => updateProjectStatus("success")}
+                                >
+                                  <IoCheckmarkCircleOutline />
+                                </span>
 
-                              {/* reject button */}
-                              <span
-                                title="reject"
-                                className="text-[28px] cursor-pointer text-red-700 hover:scale-110 hover:text-red-800 transition-all "
-                                onClick={() => updateProjectStatus("rejected")}
-                              >
-                                <RxCrossCircled />{" "}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                        {/* button to edit and delete project */}
+                                {/* reject button */}
+                                <span
+                                  title="reject"
+                                  className="text-[28px] cursor-pointer text-red-700 hover:scale-110 hover:text-red-800 transition-all "
+                                  onClick={() =>
+                                    updateProjectStatus("rejected")
+                                  }
+                                >
+                                  <RxCrossCircled />{" "}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        {/* button to edit  */}
                         <div className="w-fit flex gap-1 text-2xl items-center gap-2">
                           {/* edit button  */}
                           <span
@@ -588,15 +710,16 @@ const PreviousDetailsCard: React.FC<projectDetails> = ({
                             <LuFolderEdit />
                           </span>
 
-                          {projectDetails.approvalStatus == "success" && (
-                            <span
-                              title="reject"
-                              className="text-[27px] cursor-pointer text-red-700 hover:scale-110 hover:text-red-800 transition-all "
-                              onClick={() => updateProjectStatus("rejected")}
-                            >
-                              <RxCrossCircled />{" "}
-                            </span>
-                          )}
+                          {projectDetails.approvalStatus == "success" &&
+                            state.role === "admin" && (
+                              <span
+                                title="reject"
+                                className="text-[27px] cursor-pointer text-red-700 hover:scale-110 hover:text-red-800 transition-all "
+                                onClick={() => updateProjectStatus("rejected")}
+                              >
+                                <RxCrossCircled />{" "}
+                              </span>
+                            )}
                         </div>
                       </div>
                     )

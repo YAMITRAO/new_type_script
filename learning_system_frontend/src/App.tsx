@@ -67,6 +67,10 @@ function App() {
           element: state.isAuth ? <Invitations /> : <Login />,
         },
         {
+          path: "/project/select/comp/:projectId",
+          element: state.isAuth ? <Inventory /> : <Login />,
+        },
+        {
           path: "/inventory",
           element: state.isAuth ? <Inventory /> : <Login />,
         },
@@ -86,7 +90,7 @@ function App() {
     },
     {
       path: "/test",
-      element: <CartCard />,
+      // element: <SelectProjectComp />,
       // element: <InventoryViewCard />,
     },
   ]);

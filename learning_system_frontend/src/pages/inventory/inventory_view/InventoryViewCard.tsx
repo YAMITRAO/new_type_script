@@ -1,18 +1,68 @@
 import compoImg from "../../../assets/compo/none.jpg";
 import backgroundImg from "../../../assets/background/1.webp";
 import { Component_details_int } from "./types";
-import { useContext } from "react";
+import { useContext, useRef, useState } from "react";
 import UserContext from "../../../context/user_context/UserContext";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
+import axiosInst from "../../../api/AxiosInst";
+import { toast } from "react-toastify";
 
 interface Inventory_card_int {
   compDetails: Component_details_int;
+  onSelect: (data: {}) => void;
 }
 
-const InventoryViewCard: React.FC<Inventory_card_int> = ({ compDetails }) => {
+const InventoryViewCard: React.FC<Inventory_card_int> = ({
+  compDetails,
+  onSelect,
+}) => {
   const { state } = useContext(UserContext);
-  console.log("Component details", compDetails);
+  // console.log("Component details", compDetails);
   let location = useLocation();
+  let params = useParams();
+  let projectId = params.projectId;
+  const selectedQtyRef = useRef<HTMLInputElement>(null);
+
+  // select component handler
+  const selectComponentHandler = async (
+    e: React.MouseEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
+    let componentTitle = compDetails.componentTitle;
+    let dataToUseStateAtInventory = {
+      [componentTitle]: {
+        componentTitle: componentTitle,
+        componentId: compDetails._id,
+        componentImageUrl: compDetails.componentImageUrl,
+        componentStatus: "pending",
+        selectedQuantity: selectedQtyRef.current?.value,
+        allocatedQuantity: compDetails.allocatedQuantity,
+        availableQuantity: compDetails.availableQuantity,
+      },
+    };
+
+    // it's to update the cart (remove after api call )
+    if (dataToUseStateAtInventory) {
+      onSelect(dataToUseStateAtInventory);
+    }
+
+    // send every selection details to backend
+    const response = await axiosInst.post(
+      `/user/update-compo-selection/${projectId}`,
+      {
+        ...dataToUseStateAtInventory,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+      }
+    );
+
+    console.log("response is ", response);
+    toast.success("Selected Successfully !!!");
+  };
   return (
     <div className=" m-2 pt-1 pb-8 px-1 w-[320px] h-[210px]  rounded-md relative ">
       {/* image view */}
@@ -84,7 +134,7 @@ const InventoryViewCard: React.FC<Inventory_card_int> = ({ compDetails }) => {
         {location.pathname !== "/inventory" && (
           <form
             className="absolute top-1 right-1 w-fit gap-1 flex flex-col"
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={selectComponentHandler}
           >
             <input
               type="number"
@@ -92,6 +142,7 @@ const InventoryViewCard: React.FC<Inventory_card_int> = ({ compDetails }) => {
               min="1"
               defaultValue={1}
               max={compDetails.availableQuantity}
+              ref={selectedQtyRef}
             />
             <button
               type="submit"

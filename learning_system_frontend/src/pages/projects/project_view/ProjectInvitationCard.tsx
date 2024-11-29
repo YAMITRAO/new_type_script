@@ -106,7 +106,7 @@ const ProjectInvitationCard: React.FC<Invitationcard_int> = ({
     }
   };
   return (
-    <div className="mt-4  h-fit w-full  max-w-full min-w-[350px] rounded-md p-6 md:p-4  text-slate-300">
+    <div className="mt-4  h-fit w-full   max-w-full min-w-[350px] rounded-md p-6 md:p-4  text-slate-300">
       {/* search user by mail id for invitation */}
       {(state.email === email || state.role === "admin") && (
         <div className="w-full  flex">

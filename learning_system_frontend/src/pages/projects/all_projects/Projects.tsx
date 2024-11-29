@@ -132,7 +132,7 @@ const Projects: React.FC<projects_int> = ({ isUser, isAdmin }) => {
         </Link>
 
         {/* own created projects display here admin get all project by this api  */}
-        {projectDetails && projectDetails.length ? (
+        {projectDetails && projectDetails.length > 0 ? (
           <div className=" w-full flex flex-wrap justify-center gap-2 box-border mt-4 pt-2 ">
             {state.role !== "admin" && (
               <div className="text-xl text-center font-medium text-green-700 w-full ml-4">

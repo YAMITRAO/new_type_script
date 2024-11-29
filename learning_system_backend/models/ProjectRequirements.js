@@ -2,10 +2,17 @@ const mongoose = require("mongoose");
 
 const componentSchema = new mongoose.Schema(
   {
-    quantity: { type: Number, required: true },
-    isAssigned: { type: Boolean, default: false },
-    assignmentStatus: { type: String, default: "Not Assigned" },
-    assignedBy: { type: String, default: null },
+    // quantity: { type: Number, required: true },
+    // isAssigned: { type: Boolean, default: false },
+    // assignmentStatus: { type: String, default: "Not Assigned" },
+    // assignedBy: { type: String, default: null },
+    componentTitle: { type: String, default: null },
+    componentId: { type: String, default: null },
+    componentImageUrl: { type: String, default: null },
+    componentStatus: { type: String, default: null },
+    selectedQuantity: { type: String, default: null },
+    allocatedQuantity: { type: String, default: null },
+    availableQuantity: { type: String, default: null },
   },
   { timestamps: true }
 );
@@ -22,7 +29,7 @@ const projectRequirementSchema = new mongoose.Schema(
       ref: "ProjectModel",
     },
     requirementOnCreation: {
-      type: mongoose.Schema.Types.Mixed, //requirement on creation of project put all at a
+      type: mongoose.Schema.Types.Mixed, //requirement on creation of project put all
       default: {},
     },
     requirementAddFromInventory: {
@@ -30,6 +37,10 @@ const projectRequirementSchema = new mongoose.Schema(
       of: componentSchema,
       required: false,
     },
+    // requirementAddFromInventory: {
+    //   type: {},
+    //   required: false,
+    // },
   },
   { timestamps: true }
 );

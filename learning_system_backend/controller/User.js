@@ -601,11 +601,17 @@ const userGetSingleProjectController = async (req, res) => {
       user.role == "admin"
         ? await ProjectModel.findOne({ _id: projectId })
             .populate("createdBy", "name email userClass userSec")
-            .populate("projectRequirement", "requirementOnCreation")
+            .populate(
+              "projectRequirement",
+              "requirementOnCreation requirementAddFromInventory"
+            )
             .populate("projectInvitations", "invitedUsers")
         : await ProjectModel.findOne({ _id: projectId })
             .populate("createdBy", "name email userClass userSec")
-            .populate("projectRequirement", "requirementOnCreation")
+            .populate(
+              "projectRequirement",
+              "requirementOnCreation requirementAddFromInventory"
+            )
             .populate("projectInvitations", "invitedUsers");
     // if (!project.length) {
     //   throw new Error("Project not found");
@@ -766,6 +772,64 @@ const editProjectDetailsController = async (req, res) => {
 
     console.log("Admin founded and that is", admin);
     if (!admin) {
+      throw new Error("Admin/user not found");
+    }
+
+    // check project availability
+    const editProject = await ProjectModel.findById(projectId);
+    if (!editProject) {
+      throw new Error("Project Not found");
+    }
+
+    // admin and allowed user can edit only (user allocation from project model)
+    if (admin?.role !== "admin" && !editProject.isEditAllowed) {
+      throw new Error("Only admin/allowed user can edit project");
+    }
+
+    editProject.projectTitle = projectTitle;
+    editProject.projectDescription = projectDescription;
+    editProject.projectResources = projectResources;
+    await editProject.save();
+
+    // change to the requirement folder
+    const requirementFolder = await ProjectRequirementModel.findOne({
+      projectRefrence: editProject._id,
+    });
+
+    console.log("requiremet data is ", requirement);
+    console.log(
+      "Requirement previous data is",
+      requirementFolder.requirementOnCreation
+    );
+    requirementFolder.requirementOnCreation = requirement;
+    await requirementFolder.save();
+
+    res.status(200).json({
+      message: "Project edited successfully...",
+      data: editProject,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: error && error.message,
+    });
+  }
+};
+
+// is user allowed to edit
+const isUserAllowedToEditProjectController = async (req, res) => {
+  try {
+    const projectId = req?.params?.projectId;
+    const adminMain = req?.userMail;
+    const editStatus = req?.body?.editStatus;
+    console.log("admin mail id :- ", adminMain);
+    console.log("project id ", projectId);
+    console.log("edit status is:-", editStatus);
+
+    // find user to check for admin
+    const admin = await UserModel.findOne({ email: adminMain });
+
+    console.log("Admin founded and that is", admin);
+    if (!admin) {
       throw new Error("Admin not found");
     }
 
@@ -777,21 +841,115 @@ const editProjectDetailsController = async (req, res) => {
       throw new Error("Project Not found");
     }
 
-    editProject.projectTitle = projectTitle;
-    editProject.projectDescription = projectDescription;
-    editProject.projectResources = projectResources;
+    editProject.isEditAllowed = editStatus;
     await editProject.save();
 
-    // change to the requirement folder
-    // const requirementFolder = await ProjectRequirementModel.find({
-    //   projectRefrence: editProject._id,
-    // });
-    // requirementFolder.requirementOnCreation = requirement;
-    // await requirementFolder.save();
+    res.status(200).json({
+      message: "Project edit updated successfully...",
+      data: {},
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: error && error.message,
+    });
+  }
+};
+
+// is used allowed to select component
+const isUserAllowedToSelectCompController = async (req, res) => {
+  try {
+    const projectId = req?.params?.projectId;
+    const adminMain = req?.userMail;
+    const selectionStatus = req?.body?.selectionStatus;
+
+    // find user to check for admin
+    const admin = await UserModel.findOne({ email: adminMain });
+
+    console.log("Admin founded and that is", admin);
+    if (!admin) {
+      throw new Error("Admin not found");
+    }
+
+    if (admin?.role !== "admin") {
+      throw new Error("Only admin can edit project");
+    }
+    const editProject = await ProjectModel.findById(projectId);
+    if (!editProject) {
+      throw new Error("Project Not found");
+    }
+
+    editProject.isComponentSelectionAllowed = selectionStatus;
+    await editProject.save();
 
     res.status(200).json({
-      message: "Project edited successfully...",
-      data: editProject,
+      message: "Project selection status updated successfully...",
+      data: {},
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: error && error.message,
+    });
+  }
+};
+
+// update selected component to projectRequirement section
+const updateSelectedComponentToProjectRequirementController = async (
+  req,
+  res
+) => {
+  try {
+    const projectId = req?.params?.projectId;
+    const adminMain = req?.userMail;
+    console.log("Project id is", projectId);
+
+    // find project is avilable or not
+    const project = await ProjectModel.findById(projectId);
+    // if project not found
+    if (!project) {
+      throw new Error("Project Not found");
+    }
+    if (!project.isComponentSelectionAllowed) {
+      throw new Error("Component selection is not allowed for this project");
+    }
+    console.log(project);
+
+    // extract projectRequirement id
+    const projectRequirementId = project.projectRequirement;
+    console.log("project requirement id is", projectRequirementId);
+
+    // find projectRequirement is avilable or not
+    const projectRequirement = await ProjectRequirementModel.findById(
+      projectRequirementId
+    );
+    // if projectRequirement not found
+    if (!projectRequirement) {
+      throw new Error("Project Requirement Not found");
+    }
+
+    const existingData =
+      projectRequirement.requirementAddFromInventory || new Map();
+    const mergedData = {
+      ...Object.fromEntries(existingData),
+      ...req?.body,
+    };
+
+    console.log("Project requirement is", projectRequirement);
+
+    console.log("body data is:-", req?.body);
+
+    const projectRequirement1 = await ProjectRequirementModel.findByIdAndUpdate(
+      projectRequirementId,
+      {
+        $set: {
+          requirementAddFromInventory: mergedData,
+        },
+      }
+    );
+    projectRequirement1.save();
+    console.log("The requirement is :---", projectRequirement1);
+
+    res.json({
+      message: "Project Requirement updated successfully...",
     });
   } catch (error) {
     res.status(400).json({
@@ -820,4 +978,7 @@ module.exports = {
   getSingleUserAllDetailsController,
   editProjectApprovalStatusController,
   editProjectDetailsController,
+  isUserAllowedToEditProjectController,
+  isUserAllowedToSelectCompController,
+  updateSelectedComponentToProjectRequirementController,
 };

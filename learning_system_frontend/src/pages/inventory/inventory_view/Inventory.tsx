@@ -8,11 +8,15 @@ import axiosInst from "../../../api/AxiosInst";
 import { ApiResponse } from "../../../api/ApiResponses";
 import { Component_details_int } from "./types";
 import UserContext from "../../../context/user_context/UserContext";
+import InventoryCompCart from "./InventoryCompCart";
+import { MdShoppingCartCheckout } from "react-icons/md";
+import { TiShoppingCart } from "react-icons/ti";
 
 const Inventory = () => {
   const { state } = useContext(UserContext);
   const [components, setComponents] = useState<Component_details_int[]>([]);
   const [searchFilter, setSearchFilter] = useState<Component_details_int[]>([]);
+  const [selectedCompo, setSelectedCompo] = useState<Record<string, {}>>({});
   // get all component
   const getAllComponent = async () => {
     try {
@@ -45,10 +49,17 @@ const Inventory = () => {
     setComponents(arr);
   };
 
+  // callback for selected component
+  const onSelectAtViewCard = (data: {}) => {
+    setSelectedCompo((prev) => ({ ...prev, ...data }));
+  };
+
   useEffect(() => {
     // get all components
     getAllComponent();
   }, []);
+
+  console.log("selected compo is:-", selectedCompo);
   return (
     <div className="w-full">
       {/* add-to-inventory button */}
@@ -60,8 +71,8 @@ const Inventory = () => {
         </Link>
       )}
       {/* search bar */}
-      {location.pathname === "/inventory" && (
-        <div className="h-auto w-full text-center  flex justify-center items-center mt-8 mb-4">
+      {true && (
+        <div className="h-auto w-full text-center  flex flex-wrap gap-2 justify-center  items-center mt-8 mb-4">
           {/* search input  */}
           <div className=" w-[70%] flex justify-center items-center  text-slate-300">
             <input
@@ -71,6 +82,17 @@ const Inventory = () => {
               onChange={onSearchChange}
             />
           </div>
+
+          {/* inventory cart */}
+          {location.pathname !== "/inventory" && (
+            <div className="w-fit text-2xl p-2 text-slate-900 text-center bg-slate-300 rounded-full relative">
+              <MdShoppingCartCheckout />
+              {/* cart count */}
+              <div className="absolute -top-3 -right-3 text-sm rounded-full bg-red-700 text-slate-100 px-2 py-1 flex justify-center font-mono items-center">
+                {Object.keys(selectedCompo).length}
+              </div>
+            </div>
+          )}
         </div>
       )}
       {/* inventory card */}
@@ -79,7 +101,13 @@ const Inventory = () => {
           if (!val.isAllowedToSelect && state.role !== "admin") {
             return;
           }
-          return <InventoryViewCard key={val._id} compDetails={val} />;
+          return (
+            <InventoryViewCard
+              key={val._id}
+              compDetails={val}
+              onSelect={onSelectAtViewCard}
+            />
+          );
         })}
       </div>
     </div>

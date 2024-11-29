@@ -13,3 +13,12 @@ export interface Component_details_int {
   updatedAt: string;
   _id: string;
 }
+
+export interface Cart_comp_data_int {
+  componentTitle: string;
+  componentId: string;
+  componentImageUrl: string;
+  componentStatus: string;
+  allocatedQuantity: string;
+  availableQuantity: string;
+}

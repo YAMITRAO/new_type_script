@@ -6,7 +6,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 import ProjectInvitationCard from "./ProjectInvitationCard";
-import UserContext from "../../../context/user_context/UserContext";
+// import UserContext from "../../../context/user_context/UserContext";
 import CartCard from "./CartCard";
 
 export interface projectDetails_int {
@@ -14,6 +14,8 @@ export interface projectDetails_int {
   projectTitle: string;
   projectDescription: string;
   approvalStatus: string;
+  isEditAllowed: boolean;
+  isComponentSelectionAllowed: boolean;
   createdAt?: Date;
   updatedAt?: Date;
   createdBy: {
@@ -24,6 +26,7 @@ export interface projectDetails_int {
   };
   projectRequirement?: {
     requirementOnCreation: {};
+    requirementAddFromInventory?: {};
   };
   projectResources?: {};
   projectInvitations: {
@@ -51,7 +54,7 @@ const ProjectView = () => {
           },
         }
       );
-      // console.log("Propject data is :-", response);
+      console.log("!!!!!!!!!!!Propject data(response) is :-", response);
       setProjectDeatils(response?.data?.data);
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -76,10 +79,7 @@ const ProjectView = () => {
       </div>
 
       {/* right side */}
-      <div className="w-full flex justify-center ">
-        {/* select component card */}
-        <CartCard />
-
+      <div className="w-full flex flex-col gap-4 items-center ">
         {/* invitation card */}
         {projectDetails && projectDetails.approvalStatus === "success" && (
           <ProjectInvitationCard
@@ -87,6 +87,20 @@ const ProjectView = () => {
             email={projectDetails?.createdBy?.email || "none"}
             invitedUsers={projectDetails?.projectInvitations.invitedUsers || {}}
             invitationDocId={projectDetails?.projectInvitations._id}
+            onSuccess={() => getSingleProjectData()}
+          />
+        )}
+
+        {/* select component card */}
+        {projectDetails && projectDetails.approvalStatus == "success" && (
+          <CartCard
+            projectId={projectDetails._id}
+            isComponentSelectionAllowed={
+              projectDetails.isComponentSelectionAllowed
+            }
+            selectedComponentsFromInventory={
+              projectDetails.projectRequirement?.requirementAddFromInventory
+            }
             onSuccess={() => getSingleProjectData()}
           />
         )}

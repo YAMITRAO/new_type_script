@@ -19,6 +19,9 @@ const {
   getProjectsInvitationController,
   updateProjectInvitationStatusController,
   userGetInvitedProjectController,
+  isUserAllowedToEditProjectController,
+  isUserAllowedToSelectCompController,
+  updateSelectedComponentToProjectRequirementController,
 } = require("../controller/User");
 const Auth = require("../middleware/Auth");
 
@@ -94,6 +97,27 @@ userRouter.put(
   "/edit-project-details/:projectId",
   Auth,
   editProjectDetailsController
+);
+
+// is project edit allowed to user update
+userRouter.put(
+  "/project-edit-status-update/:projectId",
+  Auth,
+  isUserAllowedToEditProjectController
+);
+
+// is user allowed to select component or not
+userRouter.put(
+  "/project-selection-status-update/:projectId",
+  Auth,
+  isUserAllowedToSelectCompController
+);
+
+// requirement update according to selection
+userRouter.post(
+  "/update-compo-selection/:projectId",
+  Auth,
+  updateSelectedComponentToProjectRequirementController
 );
 
 module.exports = userRouter;

@@ -22,6 +22,11 @@ const projectSchema = new mongoose.Schema(
       default: "pending", // pending, accepted, rejected
     },
 
+    isEditAllowed: {
+      type: Boolean,
+      default: false,
+    },
+
     // step two: component selection
     isComponentSelectionAllowed: {
       type: Boolean,
