@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import axiosInst from "../../../api/AxiosInst";
 
 const InventoryReg = () => {
-  let formData_initialValues: Upload_compo_details_int = {
+  const formData_initialValues: Upload_compo_details_int = {
     componentTitle: "",
     availableQuantity: "",
     allocatedQuantity: "",
@@ -94,7 +94,7 @@ const InventoryReg = () => {
     const componentImageUrl = await uploadToCloudnary(file);
     console.log("url is", componentImageUrl);
     setFormData((prev) => ({ ...prev, componentImageUrl }));
-    let dataToAPi = {
+    const dataToAPi = {
       ...formData,
       componentImageUrl: componentImageUrl,
     };
