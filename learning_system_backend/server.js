@@ -14,7 +14,7 @@ const corsOptions = {
   credentials: true, // Allow sending cookies
 };
 
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(cookieParser());
 
 app.use(express.static("public"));
