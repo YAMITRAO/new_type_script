@@ -8,9 +8,9 @@ import axiosInst from "../../../api/AxiosInst";
 import { ApiResponse } from "../../../api/ApiResponses";
 import { Component_details_int } from "./types";
 import UserContext from "../../../context/user_context/UserContext";
-import InventoryCompCart from "./InventoryCompCart";
+// import InventoryCompCart from "./InventoryCompCart";
 import { MdShoppingCartCheckout } from "react-icons/md";
-import { TiShoppingCart } from "react-icons/ti";
+// import { TiShoppingCart } from "react-icons/ti";
 
 const Inventory = () => {
   const { state } = useContext(UserContext);

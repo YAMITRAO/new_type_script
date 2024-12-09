@@ -12,20 +12,20 @@ import { PiCertificate } from "react-icons/pi";
 
 import { FaUsers } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
-import { PiMicrosoftTeamsLogoFill } from "react-icons/pi";
+// import { PiMicrosoftTeamsLogoFill } from "react-icons/pi";
 import { PiMicrosoftTeamsLogoDuotone } from "react-icons/pi";
 
 import { RiUserLine } from "react-icons/ri";
 import { AiOutlineAlert } from "react-icons/ai";
-import { AiOutlineBarChart } from "react-icons/ai";
+// import { AiOutlineBarChart } from "react-icons/ai";
 
-import { IoSearch } from "react-icons/io5";
-import { IoDocumentTextSharp } from "react-icons/io5";
-import { MdAdminPanelSettings } from "react-icons/md";
+// import { IoSearch } from "react-icons/io5";
+// import { IoDocumentTextSharp } from "react-icons/io5";
+// import { MdAdminPanelSettings } from "react-icons/md";
 import { MdOutlineMessage } from "react-icons/md";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { AiOutlineLogout } from "react-icons/ai";
-import NavBar from "./NavBar";
+// import NavBar from "./NavBar";
 
 const SideBar = () => {
   const [isDarkVisible, setIsDarkVisible] = useState(false);

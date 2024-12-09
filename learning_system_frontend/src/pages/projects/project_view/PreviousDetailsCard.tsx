@@ -402,7 +402,7 @@ const PreviousDetailsCard: React.FC<projectDetails> = ({
                 {/* requirement input container */}
                 <div className="flex p-1 gap-4 flex-wrap w-full justify-center border-0 rounded-md">
                   {projectRequirements &&
-                    projectRequirements.map((val, index, arr) => (
+                    projectRequirements.map((val) => (
                       <div
                         className="w-full flex gap-4"
                         key={`${val[0]}+uniqueKay`}

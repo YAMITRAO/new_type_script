@@ -1,5 +1,5 @@
-import React from "react";
-import userImg from "../assets/user_avatar1.svg";
+// import React from "react";
+// import userImg from "../assets/user_avatar1.svg";
 
 const Test = () => {
   return (

@@ -1,7 +1,7 @@
 import compoImg from "../../../assets/compo/none.jpg";
-import backgroundImg from "../../../assets/background/1.webp";
+// import backgroundImg from "../../../assets/background/1.webp";
 import { Component_details_int } from "./types";
-import { useContext, useRef, useState } from "react";
+import { useContext, useRef } from "react";
 import UserContext from "../../../context/user_context/UserContext";
 import { useLocation, useParams } from "react-router-dom";
 import axiosInst from "../../../api/AxiosInst";

@@ -10,7 +10,7 @@ import { ApiResponse } from "../../../api/ApiResponses";
 const ViewUser = () => {
   const { userId } = useParams();
 
-  const [userDetails, setUserDetails] = useState<SingelUser>({
+  const [userDetails] = useState<SingelUser>({
     _id: "1",
     name: "John Doe",
     email: "john@example.com",
@@ -20,7 +20,7 @@ const ViewUser = () => {
     isBlocked: false,
   });
 
-  const [userProjects, setUserProjects] = useState<projectDetails>({
+  const [userProjects] = useState<projectDetails>({
     _id: "",
     projectTitle: "",
     projectDescription: "",
@@ -31,7 +31,7 @@ const ViewUser = () => {
 
   const getUserDetails = async () => {
     try {
-      const response = await axiosInst.get<ApiResponse<userDashboard>>(
+       await axiosInst.get<ApiResponse<userDashboard>>(
         `/user/single-user-all-details/${userId}`,
         {
           headers: {
