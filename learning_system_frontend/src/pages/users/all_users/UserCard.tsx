@@ -53,7 +53,7 @@ const UserCard: React.FC<UserCard_int> = ({
     setEditedValue((prev) => ({ ...prev, [name]: value }));
   };
   // edit user function (to make input visible and inser existing value)
-  const editUserHandler = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const editUserHandler = async () => {
     setIsEditVisible(true);
     setEditedValue({
       name: name,

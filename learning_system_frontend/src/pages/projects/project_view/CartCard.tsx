@@ -21,7 +21,7 @@ const CartCard: React.FC<CartCard_int> = ({
   onSuccess,
 }) => {
   const { state } = useContext(UserContext);
-  const [selectedComponent, setSelectedComponent] = useState([
+  const [selectedComponent] = useState([
     { id: 1, date: "10-12-2022", compName: "comp1", compStatus: "self" },
     { id: 2, date: "09-03-2023", compName: "comp2", compStatus: "lab" },
     { id: 3, date: "10-03-2024", compName: "comp3", compStatus: "pending" },

@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import UserContext from "../context/user_context/UserContext";
 import { IoSearch } from "react-icons/io5";
 // import UserContextData from "../context/user_context/UserContext";

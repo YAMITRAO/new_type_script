@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import PreviousDetailsCard from "./PreviousDetailsCard";
 import axiosInst from "../../../api/AxiosInst";
 import { ApiResponse } from "../../../api/ApiResponses";

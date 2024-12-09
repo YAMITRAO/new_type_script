@@ -85,7 +85,7 @@ const ProjectInvitationCard: React.FC<Invitationcard_int> = ({
     }
     console.log("The invitation data is:-", projectId, enteredMail);
     try {
-      const response = await axiosInst.post("/user/invite-user", {
+       await axiosInst.post("/user/invite-user", {
         projectId: projectId,
         email: enteredMail,
         userName: invitedUserName,

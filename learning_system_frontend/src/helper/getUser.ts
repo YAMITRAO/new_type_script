@@ -4,7 +4,7 @@ import {
   LoginUserDetails,
 } from "../api/ApiResponses";
 import axiosInst from "../api/AxiosInst";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 import axios, { AxiosError } from "axios";
 
 const getUser = async () => {

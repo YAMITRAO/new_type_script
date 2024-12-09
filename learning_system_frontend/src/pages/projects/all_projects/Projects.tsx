@@ -3,7 +3,7 @@ import UserContext from "../../../context/user_context/UserContext";
 import axiosInst from "../../../api/AxiosInst";
 import { ApiResponse } from "../../../api/ApiResponses";
 import axios from "axios";
-import { toast, useToast } from "react-toastify";
+import { toast } from "react-toastify";
 import { MdOutlineAddComment } from "react-icons/md";
 import { Link } from "react-router-dom";
 import ProjectViewCard from "./ProjectViewCard";
@@ -28,7 +28,7 @@ interface projects_int {
 }
 
 const Projects: React.FC<projects_int> = ({ isUser, isAdmin }) => {
-  const { state, dispatch } = useContext(UserContext);
+  const { state } = useContext(UserContext);
   // project details state
   const [projectDetails, setProjectsDetails] = useState<projectDetails[]>([
     {

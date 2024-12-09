@@ -1,10 +1,10 @@
 // import sideImg from "../assets/23810.jpg";
 import sideImg from "../assets/project4.jpg";
-import { FiEdit } from "react-icons/fi";
-import { MdDelete } from "react-icons/md";
+// import { FiEdit } from "react-icons/fi";
+// import { MdDelete } from "react-icons/md";
 import { IoEye } from "react-icons/io5";
 import { Link } from "react-router-dom";
-import { FcApproval } from "react-icons/fc";
+// import { FcApproval } from "react-icons/fc";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { FaRegTimesCircle } from "react-icons/fa";
 import axiosInst from "../api/AxiosInst";
