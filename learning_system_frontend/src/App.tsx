@@ -9,17 +9,17 @@ import Home from "./pages/home/Home";
 import { useContext } from "react";
 import UserContext from "./context/user_context/UserContext";
 import Users from "./pages/users/all_users/Users";
-import Test from "./components/Test";
+// import Test from "./components/Test";
 import ViewUser from "./pages/users/view_user/ViewUser";
 import RegisterProject from "./pages/projects/project_reg/RegisterProject";
 import Projects from "./pages/projects/all_projects/Projects";
 import ProjectView from "./pages/projects/project_view/ProjectView";
-import Invitationcard from "./pages/projects/project_view/ProjectInvitationCard";
+// import Invitationcard from "./pages/projects/project_view/ProjectInvitationCard";
 import Invitations from "./pages/invitations/Invitations";
 import InventoryReg from "./pages/inventory/add_to_inventory/InventoryReg";
 import Inventory from "./pages/inventory/inventory_view/Inventory";
-import InventoryViewCard from "./pages/inventory/inventory_view/InventoryViewCard";
-import CartCard from "./pages/projects/project_view/CartCard";
+// import InventoryViewCard from "./pages/inventory/inventory_view/InventoryViewCard";
+// import CartCard from "./pages/projects/project_view/CartCard";
 
 function App() {
   const { state } = useContext(UserContext);
